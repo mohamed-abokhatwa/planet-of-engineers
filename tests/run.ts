@@ -18,6 +18,7 @@ import {
 import { checkPostText, isValidHandle } from '../src/lib/moderation';
 import { CHALLENGES } from '../src/data/challenges';
 import { initials } from '../src/lib/handle';
+import { readFileSync } from 'fs';
 
 let passed = 0;
 let failed = 0;
@@ -117,6 +118,12 @@ for (const [i, q] of CHALLENGES.entries()) {
   expect(`challenge ${i} answer in range`, q.answer >= 0 && q.answer < 4);
   expect(`challenge ${i} bilingual`, !!q.q.en && !!q.q.ar && !!q.explain.en && !!q.explain.ar && q.options.every((o) => !!o.en && !!o.ar));
 }
+
+// The database answer key must match the app's question bank
+const keysSql = readFileSync('supabase/migrations/0002_challenge_keys.sql', 'utf8');
+const keys = [...keysSql.matchAll(/\((\d+), (\d)\)/g)].map((m) => [Number(m[1]), Number(m[2])]);
+expect('answer key has every question', keys.length === CHALLENGES.length);
+expect('answer key matches bank', keys.every(([i, a]) => CHALLENGES[i]?.answer === a));
 
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);
