@@ -16,6 +16,7 @@ import {
   type Conductor,
   type PipeMaterial,
 } from './calc';
+import { GROUP_ORDER, MORE_TOOLS } from './defs-more';
 
 type T = { en: string; ar: string };
 const t = (en: string, ar: string): T => ({ en, ar });
@@ -49,7 +50,7 @@ const pos = (...xs: number[]) => xs.every((x) => Number.isFinite(x) && x > 0);
 
 const MOTORS = [0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315, 355, 400];
 
-export const TOOLS: ToolDef[] = [
+const BASE_TOOLS: ToolDef[] = [
   {
     id: 'concrete',
     icon: 'cube-outline',
@@ -335,5 +336,12 @@ export const TOOLS: ToolDef[] = [
     },
   },
 ];
+
+const order = (g: T) => {
+  const i = GROUP_ORDER.indexOf(g.en);
+  return i < 0 ? GROUP_ORDER.length : i;
+};
+/** Every tool, ordered by group (the sort is stable, so tools keep their order inside a group). */
+export const TOOLS: ToolDef[] = [...BASE_TOOLS, ...MORE_TOOLS].sort((a, b) => order(a.group) - order(b.group));
 
 export const findTool = (id: string) => TOOLS.find((x) => x.id === id);

@@ -57,6 +57,8 @@ function Root() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="tool/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="converter" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="calculator" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="reference" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="question/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="ask" options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="salary-share" options={{ animation: 'slide_from_bottom' }} />

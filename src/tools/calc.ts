@@ -66,6 +66,26 @@ export const UNIT_CATEGORIES: UnitCategory[] = [
     units: [u('Nm', 'N·m', 1), u('kNm', 'kN·m', 1e3), u('lbfft', 'lbf·ft', 1.3558179483314), u('kgfm', 'kgf·m', G)],
   },
   {
+    id: 'density',
+    units: [u('kgm3', 'kg/m³', 1), u('gcm3', 'g/cm³', 1e3), u('tm3', 't/m³', 1e3), u('kgL', 'kg/L', 1e3), u('lbft3', 'lb/ft³', 16.01846337), u('lbgal', 'lb/gal (US)', 119.8264273)],
+  },
+  {
+    id: 'lineload',
+    units: [u('kNm', 'kN/m', 1e3), u('Nm', 'N/m', 1), u('Nmm', 'N/mm', 1e3), u('kgfm', 'kgf/m', G), u('tfm', 'tf/m', 1e3 * G), u('lbfft', 'lbf/ft', 14.593902937), u('kipft', 'kip/ft', 14593.902937)],
+  },
+  {
+    id: 'inertia',
+    units: [u('mm4', 'mm⁴', 1e-12), u('cm4', 'cm⁴', 1e-8), u('m4', 'm⁴', 1), u('in4', 'in⁴', 4.162314256e-7)],
+  },
+  {
+    id: 'angle',
+    units: [u('deg', '°', Math.PI / 180), u('rad', 'rad', 1), u('grad', 'gon', Math.PI / 200), u('arcmin', '′ (arcmin)', Math.PI / 10800), u('arcsec', '″ (arcsec)', Math.PI / 648000), u('rev', 'rev', 2 * Math.PI)],
+  },
+  {
+    id: 'illuminance',
+    units: [u('lux', 'lux', 1), u('fc', 'foot-candle', 10.763910417)],
+  },
+  {
     id: 'temperature',
     units: [u('C', '°C', 1), u('F', '°F', 1), u('K', 'K', 1)],
   },

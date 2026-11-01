@@ -7,7 +7,7 @@ A free iOS, iPad and Android app for engineers everywhere, in English and Arabic
 
 | | |
 |---|---|
-| 🧰 **Toolbox** | 9 offline calculators (concrete & materials, rebar weight, power & current, voltage drop & cable size, pipe pressure drop, pump power, slope, areas) and a 12-category unit converter including feddan, dunam, TR and kgf/cm². Verified against reference values in `npm test`. |
+| 🧰 **Toolbox** | Fully offline. **47 calculators** in 7 groups: structural (beam moment/shear/deflection, Euler buckling, section properties, rebar spacing), civil (concrete, rebar, blocks, tiles, plaster, paint, excavation, steel weight, tanks, stairs), electrical (power, voltage drop, Ohm's law, resistors, PF correction, motor current, transformer & fault level, lighting, UPS, solar, energy cost), mechanical & HVAC (pipe drop, pump, cooling load, ducts, pipe sizing, heat, pulleys, bolt torque, hydrostatic, fill time, thermal expansion), process (dilution, ideal gas), surveying (distance & bearing, height by angle, DMS) and general maths. Plus a **scientific calculator** (safe parser, DEG/RAD, history), a **17-category unit converter** and **reference tables** (rebar, IPE, concrete grades, bolts, Sch 40 pipes, AWG, densities). Search in English or Arabic, ☆ favourites, last inputs remembered, copy/share results. Verified in `npm test`. |
 | 🆘 **Site SOS** | Ask with a photo, answer, vote, accept the best answer. Reputation levels from Trainee to Legend. Report and block on every post. |
 | 🧭 **Salary Compass** | Anonymous monthly salaries by country, discipline and experience. Ranges appear only when 5+ engineers have shared. |
 | ⚡ **Daily Challenge** | 32 exam-style questions (FE/PE level) with explanations, streaks, weekly leaderboard. |
@@ -45,13 +45,14 @@ delete from auth.users where id = (select author_id from questions where id = '�
 ## Project layout
 
 ```
-src/app/            screens (Expo Router): onboarding, 5 tabs, tool, converter, question, ask, salary-share, leaderboard, card
-src/tools/          calc.ts (pure engineering maths) + defs.ts (tool inputs/results, bilingual)
+src/app/            screens (Expo Router): onboarding, 5 tabs, tool, converter, calculator, reference, question, ask, salary-share, leaderboard, card
+src/tools/          calc.ts + calc-more.ts (pure engineering maths), expr.ts (calculator parser),
+                    tables.ts (reference data), defs.ts + defs-more.ts (tool inputs/results, bilingual)
 src/data/           api.ts (interface), demoApi.ts (offline), supabaseApi.ts (live), challenges.ts, seed.ts
 src/lib/            i18n, store, moderation, countries, format
 src/components/     blueprint UI kit, cards, pickers, sheets
 supabase/           schema with row-level security, challenge answer key, cleanup job
-tests/run.ts        150 checks: calculators, filters, challenge bank, DB key sync
+tests/run.ts        1,383 checks: every tool and option, calculator parser, tables, filters, challenge bank, DB key sync
 docs/               public support / privacy / terms pages (GitHub Pages)
 ```
 

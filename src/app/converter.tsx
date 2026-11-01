@@ -21,6 +21,11 @@ const CAT_LABEL: Record<string, { en: string; ar: string }> = {
   flow: { en: 'Flow rate', ar: 'معدل السريان' },
   speed: { en: 'Speed', ar: 'السرعة' },
   torque: { en: 'Torque / moment', ar: 'العزم' },
+  density: { en: 'Density', ar: 'الكثافة' },
+  lineload: { en: 'Line load', ar: 'الحمل الخطي' },
+  inertia: { en: 'Moment of inertia', ar: 'عزم القصور' },
+  angle: { en: 'Angle', ar: 'الزوايا' },
+  illuminance: { en: 'Illuminance', ar: 'شدة الإضاءة' },
   temperature: { en: 'Temperature', ar: 'الحرارة' },
 };
 

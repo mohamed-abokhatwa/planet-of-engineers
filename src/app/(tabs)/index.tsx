@@ -13,7 +13,16 @@ import { useApp, useLoad } from '../../lib/store';
 import { countryName, flag } from '../../lib/countries';
 import { fmtNum } from '../../lib/format';
 import { JOKES } from '../../data/challenges';
-import { TOOLS } from '../../tools/defs';
+import { findTool } from '../../tools/defs';
+
+const QUICK = [
+  { id: 'calculator', href: '/calculator' as const, icon: 'calculator-outline' as const, title: { en: 'Calculator', ar: 'الحاسبة' } },
+  { id: 'converter', href: '/converter' as const, icon: 'swap-horizontal-outline' as const, title: { en: 'Units', ar: 'الوحدات' } },
+  ...['concrete', 'beam'].map((id) => {
+    const x = findTool(id)!;
+    return { id, href: `/tool/${id}` as const, icon: x.icon, title: x.title };
+  }),
+];
 
 export default function PlanetScreen() {
   const { t, tr, locale, disc, prefs, api, touch, rtl } = useApp();
@@ -95,11 +104,11 @@ export default function PlanetScreen() {
         {/* Quick tools */}
         <SectionTitle title={t('quickTools')} action={t('seeAll')} onAction={() => router.navigate('/(tabs)/tools')} />
         <Row gap={space.sm} style={{ flexWrap: 'wrap' }}>
-          {[{ id: 'converter', icon: 'swap-horizontal-outline' as const, title: { en: 'Units', ar: 'الوحدات' } }, ...TOOLS.slice(0, 3)].map((tool) => (
+          {QUICK.map((tool) => (
             <PressableScale
               key={tool.id}
               containerStyle={{ flexBasis: '23%', flexGrow: 1 }}
-              onPress={() => router.push(tool.id === 'converter' ? '/converter' : `/tool/${tool.id}`)}
+              onPress={() => router.push(tool.href)}
               accessibilityLabel={tr(tool.title)}
             >
               <View style={styles.quick}>
