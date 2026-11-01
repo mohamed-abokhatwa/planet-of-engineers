@@ -11,7 +11,8 @@
       "requireFullScreen": true,
       "bundleIdentifier": "com.abokhatwa.planetofengineers",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "ExpoLocalization_supportsRTL": false
       }
     },
     "android": {
@@ -68,7 +69,8 @@
         }
       ],
       "expo-web-browser",
-      "expo-sharing"
+      "expo-sharing",
+      "@sentry/react-native"
     ],
     "scheme": "planetofengineers",
     "backgroundColor": "#07111F",
@@ -76,7 +78,17 @@
     "description": "A home for engineers everywhere: offline tools, Site SOS answers, anonymous salary data and a daily challenge.",
     "extra": {
       "supabaseUrl": "",
-      "supabaseAnonKey": ""
+      "supabaseAnonKey": "",
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "supportsRTL": false,
+      "forcesRTL": false,
+      "eas": {
+        "projectId": "8eab2808-1a7c-49ff-a9df-7deee38e851d"
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -13,6 +14,12 @@ import { ErrorBoundary as AppErrorBoundary } from '../components/ErrorBoundary';
 import { useTheme } from '../theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+// Crash reporting turns on only when a Sentry DSN is configured for the build. No personal data is sent.
+const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
+if (SENTRY_DSN) {
+  Sentry.init({ dsn: SENTRY_DSN, sendDefaultPii: false, enabled: !__DEV__, tracesSampleRate: 0, attachScreenshot: false });
+}
 
 export { AppErrorBoundary as ErrorBoundary };
 
@@ -70,7 +77,7 @@ function Root() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
@@ -79,3 +86,5 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+export default SENTRY_DSN ? Sentry.wrap(RootLayout) : RootLayout;

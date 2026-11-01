@@ -1,9 +1,40 @@
 {
-  "cli": { "appVersionSource": "remote" },
-  "build": {
-    "development": { "developmentClient": true, "distribution": "internal", "environment": "development" },
-    "preview": { "distribution": "internal", "android": { "buildType": "apk" }, "environment": "preview", "env": { "EXPO_PUBLIC_REQUIRE_BACKEND": "1" } },
-    "production": { "autoIncrement": true, "environment": "production", "env": { "EXPO_PUBLIC_REQUIRE_BACKEND": "1" } }
+  "cli": {
+    "appVersionSource": "remote"
   },
-  "submit": { "production": { "android": { "track": "internal" } } }
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "environment": "preview",
+      "env": {
+        "EXPO_PUBLIC_REQUIRE_BACKEND": "1",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "SENTRY_ALLOW_FAILURE": "true"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "environment": "production",
+      "env": {
+        "EXPO_PUBLIC_REQUIRE_BACKEND": "1",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "SENTRY_ALLOW_FAILURE": "true"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "track": "internal"
+      }
+    }
+  }
 }

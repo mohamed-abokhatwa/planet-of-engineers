@@ -34,6 +34,7 @@ Posts are checked automatically on your device and on our server. Every post has
 | Provider | What they do |
 |---|---|
 | **Supabase** | Hosts the database, anonymous sign-in and photo storage. |
+| **Sentry** | Crash reports: what went wrong, app version, device model and OS version. No name, email, posts or IP-based profile. Used only to fix crashes. |
 | **Apple App Store / Google Play** | App distribution (their own privacy policies apply). |
 
 ## 5. How long we keep data and how to delete it

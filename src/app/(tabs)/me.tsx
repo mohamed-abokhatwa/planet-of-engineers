@@ -51,7 +51,7 @@ export default function MeScreen() {
         <Divider />
         <Row style={{ justifyContent: 'space-between' }}>
           <LevelBadge reputation={stats.data?.reputation ?? 0} />
-          <Txt v="mono" style={{ fontSize: 12 }}>
+          <Txt v="mono" style={{ fontSize: 12, writingDirection: 'ltr' }}>
             {stats.data?.reputation ?? 0}
             {lv.next ? ` / ${lv.next.min}` : ''}
           </Txt>
@@ -61,7 +61,7 @@ export default function MeScreen() {
         </View>
         {lv.next ? (
           <Txt v="small" style={{ marginTop: 6, fontSize: 11.5 }}>
-            → {lv.next[locale]}
+            {rtl ? '←' : '→'} {lv.next[locale]}
           </Txt>
         ) : null}
       </Card>
