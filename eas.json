@@ -1,0 +1,9 @@
+{
+  "cli": { "appVersionSource": "remote" },
+  "build": {
+    "development": { "developmentClient": true, "distribution": "internal", "environment": "development" },
+    "preview": { "distribution": "internal", "android": { "buildType": "apk" }, "environment": "preview", "env": { "EXPO_PUBLIC_REQUIRE_BACKEND": "1" } },
+    "production": { "autoIncrement": true, "environment": "production", "env": { "EXPO_PUBLIC_REQUIRE_BACKEND": "1" } }
+  },
+  "submit": { "production": { "android": { "track": "internal" } } }
+}
