@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, column, fonts, radius, space } from '../theme';
+import { column, fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 
 export const haptic = {
@@ -30,14 +30,14 @@ export const haptic = {
 type Variant = 'display' | 'title' | 'heading' | 'body' | 'small' | 'label' | 'number' | 'mono';
 
 const latin: Record<Variant, TextStyle> = {
-  display: { fontFamily: fonts.sansBold, fontSize: 32, lineHeight: 38, color: colors.text, letterSpacing: -0.5 },
-  title: { fontFamily: fonts.sansSemi, fontSize: 26, lineHeight: 32, color: colors.text, letterSpacing: -0.3 },
-  heading: { fontFamily: fonts.sansSemi, fontSize: 18, lineHeight: 24, color: colors.text },
-  body: { fontFamily: fonts.sans, fontSize: 15.5, lineHeight: 24, color: colors.text },
-  small: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 19, color: colors.textMuted },
-  label: { fontFamily: fonts.mono, fontSize: 11, lineHeight: 15, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.cyan },
-  number: { fontFamily: fonts.monoSemi, fontSize: 28, lineHeight: 34, color: colors.text, letterSpacing: -0.5 },
-  mono: { fontFamily: fonts.mono, fontSize: 13, lineHeight: 19, color: colors.textMuted },
+  display: { fontFamily: fonts.sansBold, fontSize: 32, lineHeight: 38, letterSpacing: -0.5 },
+  title: { fontFamily: fonts.sansSemi, fontSize: 26, lineHeight: 32, letterSpacing: -0.3 },
+  heading: { fontFamily: fonts.sansSemi, fontSize: 18, lineHeight: 24 },
+  body: { fontFamily: fonts.sans, fontSize: 15.5, lineHeight: 24 },
+  small: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 19 },
+  label: { fontFamily: fonts.mono, fontSize: 11, lineHeight: 15, letterSpacing: 1.6, textTransform: 'uppercase' },
+  number: { fontFamily: fonts.monoSemi, fontSize: 28, lineHeight: 34, letterSpacing: -0.5 },
+  mono: { fontFamily: fonts.mono, fontSize: 13, lineHeight: 19 },
 };
 
 // Arabic: IBM Plex Sans Arabic, no letter-spacing (it breaks joined letters), more line height.
@@ -68,6 +68,8 @@ export const Txt = memo(function Txt({
   ...rest
 }: TextProps & { v?: Variant; center?: boolean; color?: string; auto?: boolean }) {
   const { rtl } = useApp();
+  const colors = useColors();
+  const tone = v === 'small' || v === 'mono' ? colors.textMuted : v === 'label' ? colors.cyan : colors.text;
   let dirRtl = rtl;
   if (auto && typeof rest.children === 'string') dirRtl = textDirection(rest.children) === 'rtl';
   const useArabic = (auto ? dirRtl : rtl) && v !== 'number' && v !== 'mono';
@@ -78,7 +80,7 @@ export const Txt = memo(function Txt({
         latin[v],
         useArabic && arabic[v],
         { writingDirection: dirRtl ? 'rtl' : 'ltr', textAlign: center ? 'center' : dirRtl ? 'right' : 'left' },
-        color ? { color } : null,
+        { color: color ?? tone },
         style,
       ]}
     />
@@ -87,6 +89,7 @@ export const Txt = memo(function Txt({
 
 /** Faint drafting grid, like blueprint paper. */
 export const BlueprintGrid = memo(function BlueprintGrid() {
+  const colors = useColors();
   return (
     <Svg width="100%" height="100%" style={StyleSheet.absoluteFill} pointerEvents="none">
       <Defs>
@@ -114,6 +117,7 @@ export function Screen({
   contentStyle?: StyleProp<ViewStyle>;
   bottomPad?: number;
 }) {
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const pad: ViewStyle = { paddingTop: insets.top + space.md, paddingBottom: insets.bottom + bottomPad, paddingHorizontal: space.md + 4 };
   return (
@@ -131,6 +135,7 @@ export function Screen({
 }
 
 export function Card({ children, style, accent }: { children: ReactNode; style?: StyleProp<ViewStyle>; accent?: boolean }) {
+  const styles = useStyles();
   return <View style={[styles.card, accent && styles.cardAccent, style]}>{children}</View>;
 }
 
@@ -186,8 +191,10 @@ export function Button({
   variant?: 'solid' | 'outline' | 'ghost';
   icon?: ReactNode;
 }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { rtl } = useApp();
-  const color = variant === 'solid' ? colors.bgDeep : colors.accent;
+  const color = variant === 'solid' ? colors.onAccent : colors.accent;
   return (
     <PressableScale onPress={onPress} disabled={disabled || loading} style={style} accessibilityLabel={label}>
       <View style={[styles.btn, variant === 'solid' && styles.btnSolid, variant === 'outline' && styles.btnOutline, { flexDirection: rtl ? 'row-reverse' : 'row' }]}>
@@ -207,6 +214,8 @@ export function Button({
 }
 
 export function Chip({ label, active, onPress, small }: { label: string; active?: boolean; onPress: () => void; small?: boolean }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { rtl } = useApp();
   return (
     <Pressable
@@ -218,7 +227,7 @@ export function Chip({ label, active, onPress, small }: { label: string; active?
       accessibilityState={{ selected: !!active }}
       style={[styles.chip, small && styles.chipSmall, active && styles.chipActive]}
     >
-      <RNText style={{ fontFamily: rtl ? fonts.arabicMedium : fonts.sansMedium, fontSize: small ? 12 : 13, color: active ? colors.bgDeep : colors.text }}>{label}</RNText>
+      <RNText style={{ fontFamily: rtl ? fonts.arabicMedium : fonts.sansMedium, fontSize: small ? 12 : 13, color: active ? colors.onAccent : colors.text }}>{label}</RNText>
     </Pressable>
   );
 }
@@ -229,10 +238,12 @@ export function Row({ children, style, gap = space.sm }: { children: ReactNode; 
 }
 
 export function Divider({ style }: { style?: StyleProp<ViewStyle> }) {
+  const colors = useColors();
   return <View style={[{ height: StyleSheet.hairlineWidth, backgroundColor: colors.line, marginVertical: space.md }, style]} />;
 }
 
 export function Loader() {
+  const colors = useColors();
   return (
     <View style={{ paddingVertical: space.xl, alignItems: 'center' }}>
       <ActivityIndicator color={colors.accent} />
@@ -241,6 +252,7 @@ export function Loader() {
 }
 
 export function SectionTitle({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
+  const colors = useColors();
   return (
     <Row style={{ justifyContent: 'space-between', marginTop: space.lg, marginBottom: space.sm + 2 }}>
       <Txt v="label">{title}</Txt>
@@ -255,20 +267,20 @@ export function SectionTitle({ title, action, onAction }: { title: string; actio
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   fill: { flex: 1, backgroundColor: colors.bg },
   card: {
-    backgroundColor: 'rgba(12,26,44,0.92)',
+    backgroundColor: colors.panel,
     borderRadius: radius.lg,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.lineStrong,
     padding: space.md,
   },
-  cardAccent: { borderColor: 'rgba(255,122,26,0.55)', backgroundColor: 'rgba(30,22,18,0.6)' },
+  cardAccent: { borderColor: colors.accentLine, backgroundColor: colors.panelAccent },
   btn: { height: 52, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.lg, gap: 8 },
   btnSolid: { backgroundColor: colors.accent },
-  btnOutline: { borderWidth: 1, borderColor: 'rgba(255,122,26,0.6)' },
-  chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.line, backgroundColor: 'rgba(255,255,255,0.03)' },
+  btnOutline: { borderWidth: 1, borderColor: colors.accentLine },
+  chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.field },
   chipSmall: { paddingHorizontal: 11, paddingVertical: 6 },
   chipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-});
+}));

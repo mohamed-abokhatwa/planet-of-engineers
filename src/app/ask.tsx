@@ -2,10 +2,10 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Image, Pressable, TextInput, View } from 'react-native';
 import { BackHeader } from '../components/BackHeader';
 import { Button, Chip, Row, Screen, Txt, haptic } from '../components/ui';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { checkPostText } from '../lib/moderation';
 import { DISCIPLINES, type Discipline, type PostResult, type Question } from '../lib/types';
@@ -16,6 +16,8 @@ const ERR: Record<Extract<PostResult<unknown>, { ok: false }>['reason'], StringK
 };
 
 export default function AskScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, api, prefs, disc, rtl, touch } = useApp();
   const [discipline, setDiscipline] = useState<Discipline>(prefs.profile.discipline);
   const [title, setTitle] = useState('');
@@ -130,11 +132,11 @@ export default function AskScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { flexWrap: 'wrap', gap: 8 },
-  input: { minHeight: 50, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, color: colors.text, paddingHorizontal: space.md, paddingVertical: 12, fontSize: 15.5, backgroundColor: 'rgba(255,255,255,0.025)' },
+  input: { minHeight: 50, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, color: colors.text, paddingHorizontal: space.md, paddingVertical: 12, fontSize: 15.5, backgroundColor: colors.field },
   area: { minHeight: 150, lineHeight: 23 },
-  photoBtn: { height: 56, borderRadius: radius.md, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(255,122,26,0.55)', justifyContent: 'center' },
+  photoBtn: { height: 56, borderRadius: radius.md, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.accentLine, justifyContent: 'center' },
   preview: { width: '100%', aspectRatio: 4 / 3, borderRadius: radius.md, backgroundColor: colors.surfaceRaised },
   remove: { position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center' },
-});
+}));

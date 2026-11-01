@@ -10,13 +10,14 @@ import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansA
 import { IBMPlexMono_500Medium, IBMPlexMono_600SemiBold } from '@expo-google-fonts/ibm-plex-mono';
 import { AppProvider, backendMissing, useApp } from '../lib/store';
 import { ErrorBoundary as AppErrorBoundary } from '../components/ErrorBoundary';
-import { colors } from '../theme';
+import { useTheme } from '../theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export { AppErrorBoundary as ErrorBoundary };
 
 function Root() {
+  const { name, colors } = useTheme();
   const { ready } = useApp();
   const [fontsLoaded, fontError] = useFonts({
     IBMPlexSans_400Regular,
@@ -49,8 +50,8 @@ function Root() {
   }
 
   return (
-    <>
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={name === 'light' ? 'dark' : 'light'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="onboarding" />
@@ -65,13 +66,13 @@ function Root() {
         <Stack.Screen name="leaderboard" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="card" options={{ animation: 'slide_from_bottom' }} />
       </Stack>
-    </>
+    </View>
   );
 }
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider style={{ backgroundColor: colors.bg }}>
+    <SafeAreaProvider>
       <AppProvider>
         <Root />
       </AppProvider>

@@ -7,7 +7,7 @@ import { BlueprintGrid, Button, Chip, Row, Txt, haptic } from '../components/ui'
 import { PlanetMark } from '../components/PlanetMark';
 import { CountrySheet, SelectField } from '../components/Pickers';
 import { ExternalLink } from '../components/ExternalLink';
-import { colors, column, fonts, radius, space } from '../theme';
+import { column, fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { LANGUAGES } from '../lib/i18n';
 import { COUNTRIES, countryName, flag } from '../lib/countries';
@@ -18,6 +18,8 @@ import { LINKS } from '../lib/links';
 const STEPS = 3; // language · welcome · profile
 
 export default function Onboarding() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, prefs, setProfile, completeOnboarding, locale, rtl, disc, roleName, api } = useApp();
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState(0);
@@ -101,7 +103,7 @@ export default function Onboarding() {
                       accessibilityRole="radio"
                       accessibilityState={{ selected: active }}
                     >
-                      <Txt center style={{ fontFamily: l.rtl ? fonts.arabicBold : fonts.sansSemi, fontSize: 18, lineHeight: 28, color: active ? colors.bgDeep : colors.text }}>
+                      <Txt center style={{ fontFamily: l.rtl ? fonts.arabicBold : fonts.sansSemi, fontSize: 18, lineHeight: 28, color: active ? colors.onAccent : colors.text }}>
                         {l.native}
                       </Txt>
                     </Pressable>
@@ -236,7 +238,7 @@ export default function Onboarding() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   fill: { flex: 1, backgroundColor: colors.bg },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: space.lg },
   iconBtn: { width: 36, height: 36, borderRadius: 10, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
@@ -244,9 +246,9 @@ const styles = StyleSheet.create({
   dotActive: { width: 22, backgroundColor: colors.accent },
   lang: { flex: 1, paddingVertical: 18, borderRadius: radius.md, borderWidth: 1, borderColor: colors.lineStrong, backgroundColor: colors.surface },
   langActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  feature: { padding: space.md, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineStrong, backgroundColor: 'rgba(12,26,44,0.85)' },
+  feature: { padding: space.md, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineStrong, backgroundColor: colors.panel },
   featureIcon: { width: 40, height: 40, borderRadius: 10, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' },
-  input: { borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, paddingHorizontal: space.md, backgroundColor: 'rgba(255,255,255,0.02)' },
+  input: { borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, paddingHorizontal: space.md, backgroundColor: colors.field },
   wrap: { flexWrap: 'wrap', gap: 8 },
   stepBtn: { width: 44, height: 44, borderRadius: 12, borderWidth: 1, borderColor: colors.lineStrong, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface },
-});
+}));

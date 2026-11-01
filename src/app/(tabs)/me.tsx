@@ -1,20 +1,28 @@
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Pressable, Switch, View } from 'react-native';
 import { Avatar, LevelBadge } from '../../components/People';
 import { ExternalLink } from '../../components/ExternalLink';
 import { Sheet } from '../../components/Sheet';
 import { Button, Card, Divider, Loader, Row, Screen, Txt, haptic } from '../../components/ui';
-import { colors, fonts, radius, space } from '../../theme';
+import { fonts, radius, space, useColors, makeStyles, type ThemeMode } from '../../theme';
 import { useApp, useLoad } from '../../lib/store';
 import { LANGUAGES, levelFor } from '../../lib/i18n';
 import { countryName, flag } from '../../lib/countries';
 import { scheduleChallengeReminder } from '../../lib/notifications';
 import { LINKS, SUPPORT_EMAIL } from '../../lib/links';
 
+const THEMES: { mode: ThemeMode; icon: keyof typeof Ionicons.glyphMap; label: { en: string; ar: string } }[] = [
+  { mode: 'dark', icon: 'moon-outline', label: { en: 'Dark', ar: 'داكن' } },
+  { mode: 'light', icon: 'sunny-outline', label: { en: 'Light', ar: 'فاتح' } },
+  { mode: 'system', icon: 'phone-portrait-outline', label: { en: 'Auto', ar: 'تلقائي' } },
+];
+
 export default function MeScreen() {
-  const { t, prefs, setPrefs, setProfile, locale, disc, roleName, reset, api } = useApp();
+  const colors = useColors();
+  const styles = useStyles();
+  const { t, tr, rtl, prefs, setPrefs, setProfile, locale, disc, roleName, reset, api } = useApp();
   const stats = useLoad((a) => a.meStats());
   const [confirm, setConfirm] = useState(false);
   const p = prefs.profile;
@@ -113,11 +121,37 @@ export default function MeScreen() {
                 accessibilityRole="radio"
                 accessibilityState={{ selected: locale === l.code }}
               >
-                <Txt style={{ fontFamily: l.rtl ? fonts.arabicMedium : fonts.sansMedium, fontSize: 13, color: locale === l.code ? colors.bgDeep : colors.text }}>{l.native}</Txt>
+                <Txt style={{ fontFamily: l.rtl ? fonts.arabicMedium : fonts.sansMedium, fontSize: 13, color: locale === l.code ? colors.onAccent : colors.text }}>{l.native}</Txt>
               </Pressable>
             ))}
           </Row>
         </Row>
+        <Divider />
+        <Row gap={10}>
+          <Ionicons name="contrast-outline" size={18} color={colors.cyan} />
+          <Txt style={{ flex: 1 }}>{tr({ en: 'Appearance', ar: 'المظهر' })}</Txt>
+        </Row>
+        <View style={[styles.segment, { flexDirection: rtl ? 'row-reverse' : 'row' }]} accessibilityRole="radiogroup">
+          {THEMES.map((o) => {
+            const on = (prefs.theme ?? 'dark') === o.mode;
+            return (
+              <Pressable
+                key={o.mode}
+                onPress={() => {
+                  haptic.select();
+                  setPrefs({ theme: o.mode });
+                }}
+                style={[styles.segBtn, on && styles.segOn]}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: on }}
+                accessibilityLabel={tr(o.label)}
+              >
+                <Ionicons name={o.icon} size={15} color={on ? colors.onAccent : colors.textMuted} />
+                <Txt style={{ fontSize: 13, lineHeight: 18, color: on ? colors.onAccent : colors.text }}>{tr(o.label)}</Txt>
+              </Pressable>
+            );
+          })}
+        </View>
         <Divider />
         <Row style={{ justifyContent: 'space-between' }}>
           <Row gap={10} style={{ flex: 1 }}>
@@ -186,10 +220,13 @@ export default function MeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
+  segment: { marginTop: 10, padding: 3, gap: 3, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.field },
+  segBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 8, borderRadius: radius.sm },
+  segOn: { backgroundColor: colors.accent },
   progress: { height: 6, borderRadius: 3, backgroundColor: colors.surfaceRaised, marginTop: space.sm, overflow: 'hidden' },
   progressFill: { height: 6, borderRadius: 3, backgroundColor: colors.accent },
   stat: { flexBasis: '47%', flexGrow: 1, padding: space.md },
   lang: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.line },
   langActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-});
+}));

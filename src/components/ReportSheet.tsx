@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Sheet } from './Sheet';
 import { Txt, haptic } from './ui';
-import { colors, space } from '../theme';
+import { space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import type { ReportReason } from '../lib/types';
 import type { StringKey } from '../lib/i18n';
@@ -18,6 +18,8 @@ const REASONS: { r: ReportReason; k: StringKey }[] = [
 export type ReportTarget = { kind: 'question' | 'answer'; id: string } | null;
 
 export function ReportSheet({ target, onClose, onDone }: { target: ReportTarget; onClose: () => void; onDone?: () => void }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, api, touch } = useApp();
   const [sent, setSent] = useState<null | 'reported' | 'blocked'>(null);
 
@@ -72,6 +74,6 @@ export function ReportSheet({ target, onClose, onDone }: { target: ReportTarget;
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: { paddingVertical: 15, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
-});
+}));

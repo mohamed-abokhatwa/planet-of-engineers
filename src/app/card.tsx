@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
 import { useRef, useState, type ComponentRef } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import { BackHeader } from '../components/BackHeader';
-import { Avatar, DISC_COLOR } from '../components/People';
+import { Avatar, useDiscColors } from '../components/People';
 import { PlanetMark } from '../components/PlanetMark';
 import { BlueprintGrid, Button, Row, Screen, Txt, haptic } from '../components/ui';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp, useLoad } from '../lib/store';
 import { levelFor } from '../lib/i18n';
 import { countryName, flag } from '../lib/countries';
@@ -20,13 +20,15 @@ function bars(handle: string) {
 }
 
 export default function CardScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, prefs, locale, disc, roleName } = useApp();
   const stats = useLoad((a) => a.meStats());
   const ref = useRef<ComponentRef<typeof View>>(null);
   const [busy, setBusy] = useState(false);
   const p = prefs.profile;
   const lv = levelFor(stats.data?.reputation ?? 0);
-  const accent = DISC_COLOR[p.discipline];
+  const accent = useDiscColors()[p.discipline];
 
   const share = async () => {
     if (!ref.current) return;
@@ -93,20 +95,20 @@ export default function CardScreen() {
       </View>
 
       {Platform.OS !== 'web' ? (
-        <Button label={t('share')} icon={<Ionicons name="share-outline" size={18} color={colors.bgDeep} />} onPress={share} loading={busy} style={{ marginTop: space.lg }} />
+        <Button label={t('share')} icon={<Ionicons name="share-outline" size={18} color={colors.onAccent} />} onPress={share} loading={busy} style={{ marginTop: space.lg }} />
       ) : null}
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     borderRadius: radius.xl,
     padding: space.lg,
-    backgroundColor: '#0A1A2E',
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.lineStrong,
     overflow: 'hidden',
   },
   stripe: { position: 'absolute', top: 0, left: 0, right: 0, height: 4 },
-});
+}));

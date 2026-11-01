@@ -3,11 +3,13 @@ import { StyleSheet } from 'react-native';
 import { BackHeader } from '../components/BackHeader';
 import { Avatar } from '../components/People';
 import { Card, Chip, Loader, Row, Screen, Txt } from '../components/ui';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp, useLoad } from '../lib/store';
 import { flag } from '../lib/countries';
 
 export default function LeaderboardScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, prefs, disc } = useApp();
   const [mineOnly, setMineOnly] = useState(false);
   const rows = useLoad((a) => a.leaderboard(mineOnly ? prefs.profile.discipline : null), String(mineOnly));
@@ -43,8 +45,8 @@ export default function LeaderboardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: { paddingVertical: 10, paddingHorizontal: 4, borderRadius: radius.sm },
   border: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
   me: { backgroundColor: colors.accentSoft },
-});
+}));

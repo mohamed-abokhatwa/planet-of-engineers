@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { BackHeader } from '../components/BackHeader';
 import { Card, Chip, Screen, Txt } from '../components/ui';
-import { colors, fonts, space } from '../theme';
+import { fonts, space, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { fmtNum } from '../lib/format';
 import { AWG, BOLTS, CONCRETE, DENSITIES, IPE, PIPES, REBAR_SIZES, pipeId, rebarRow, unitWeight } from '../tools/tables';
@@ -76,6 +76,7 @@ const TABLES: Table[] = [
 ];
 
 export default function ReferenceScreen() {
+  const styles = useStyles();
   const { tr, rtl } = useApp();
   const ar = rtl ? { fontFamily: fonts.arabicMedium } : null;
   const [id, setId] = useState('rebar');
@@ -121,11 +122,11 @@ export default function ReferenceScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   tr: { flexDirection: 'row', paddingHorizontal: 10, alignItems: 'center' },
-  head: { backgroundColor: 'rgba(255,122,26,0.10)', borderBottomWidth: 1, borderBottomColor: colors.lineStrong, paddingVertical: 8 },
-  zebra: { backgroundColor: 'rgba(255,255,255,0.025)' },
+  head: { backgroundColor: colors.accentTint, borderBottomWidth: 1, borderBottomColor: colors.lineStrong, paddingVertical: 8 },
+  zebra: { backgroundColor: colors.zebra },
   th: { fontFamily: fonts.monoSemi, fontSize: 11.5, color: colors.accent, paddingHorizontal: 4 },
   td: { fontFamily: fonts.mono, fontSize: 13, color: colors.text, paddingHorizontal: 4, paddingVertical: 8 },
   first: { fontFamily: fonts.monoSemi, color: colors.cyan },
-});
+}));

@@ -1,11 +1,12 @@
 import { type ReactNode } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, radius, space } from '../theme';
+import { radius, space, makeStyles } from '../theme';
 import { Txt } from './ui';
 
 /** Bottom sheet on top of Modal: no extra native dependencies. */
 export function Sheet({ visible, onClose, title, children, scroll }: { visible: boolean; onClose: () => void; title?: string; children: ReactNode; scroll?: boolean }) {
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
@@ -25,7 +26,7 @@ export function Sheet({ visible, onClose, title, children, scroll }: { visible: 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   fill: { flex: 1, justifyContent: 'flex-end' },
   backdrop: { ...StyleSheet.absoluteFill, backgroundColor: colors.overlay },
   sheet: {
@@ -41,4 +42,4 @@ const styles = StyleSheet.create({
     borderColor: colors.lineStrong,
   },
   handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: colors.lineStrong, marginBottom: space.md },
-});
+}));

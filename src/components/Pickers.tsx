@@ -3,12 +3,14 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Sheet } from './Sheet';
 import { Row, Txt, haptic } from './ui';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { COUNTRIES, countryName, flag } from '../lib/countries';
 
 /** A tappable field that shows the current value and opens a picker. */
 export function SelectField({ label, value, onPress }: { label: string; value: string; onPress: () => void }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { rtl } = useApp();
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} style={styles.field}>
@@ -27,6 +29,8 @@ export function SelectField({ label, value, onPress }: { label: string; value: s
 
 /** Searchable country list in a bottom sheet. */
 export function CountrySheet({ visible, onClose, onPick, selected }: { visible: boolean; onClose: () => void; onPick: (code: string) => void; selected: string }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, locale, rtl } = useApp();
   const [q, setQ] = useState('');
   const list = useMemo(() => {
@@ -59,6 +63,8 @@ export function CountrySheet({ visible, onClose, onPick, selected }: { visible: 
 
 /** Simple option list for sheets. */
 export function SheetList({ items, onPick }: { items: { key: string; label: string; active?: boolean }[]; onPick: (key: string) => void }) {
+  const colors = useColors();
+  const styles = useStyles();
   return (
     <View>
       {items.map((it) => (
@@ -82,8 +88,8 @@ export function SheetList({ items, onPick }: { items: { key: string; label: stri
   );
 }
 
-const styles = StyleSheet.create({
-  field: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: space.md, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.02)' },
+const useStyles = makeStyles((colors) => ({
+  field: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: space.md, paddingVertical: 10, backgroundColor: colors.field },
   search: { height: 44, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, color: colors.text, paddingHorizontal: space.md, marginBottom: space.sm },
   row: { paddingVertical: 13, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
-});
+}));

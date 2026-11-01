@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { BackHeader } from '../components/BackHeader';
 import { NumberField } from '../components/NumberField';
 import { Card, Chip, Row, Screen, Txt, haptic } from '../components/ui';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { fmtNum } from '../lib/format';
 import { UNIT_CATEGORIES, convert } from '../tools/calc';
@@ -30,6 +30,8 @@ const CAT_LABEL: Record<string, { en: string; ar: string }> = {
 };
 
 export default function ConverterScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, tr, rtl } = useApp();
   const [cat, setCat] = useState('pressure');
   const units = UNIT_CATEGORIES.find((c) => c.id === cat)!.units;
@@ -95,9 +97,9 @@ export default function ConverterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { flexWrap: 'wrap', gap: 8 },
   row: { paddingVertical: 11, paddingHorizontal: 8, borderRadius: radius.sm },
   border: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
   current: { backgroundColor: colors.accentSoft },
-});
+}));

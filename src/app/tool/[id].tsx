@@ -6,13 +6,15 @@ import { Pressable, Share, StyleSheet, View } from 'react-native';
 import { BackHeader } from '../../components/BackHeader';
 import { NumberField } from '../../components/NumberField';
 import { Card, Chip, Row, Screen, Txt, haptic } from '../../components/ui';
-import { colors, fonts, space } from '../../theme';
+import { fonts, space, useColors, makeStyles } from '../../theme';
 import { useApp } from '../../lib/store';
 import { fmtNum } from '../../lib/format';
 import { findTool } from '../../tools/defs';
 import { clearInputs, loadInputs, saveInputs, toggleFavourite, useFavourites } from '../../lib/toolPrefs';
 
 export default function ToolScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const tool = findTool(String(id));
   const { t, tr, rtl } = useApp();
@@ -203,9 +205,9 @@ export default function ToolScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: { paddingVertical: 8, justifyContent: 'space-between' },
   rowBorder: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
   wrap: { flexWrap: 'wrap', gap: 8 },
   iconBtn: { width: 40, height: 40, borderRadius: 12, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface },
-});
+}));

@@ -3,7 +3,7 @@
 **The world is engineers… and a few other people.**
 *الدنيا عبارة عن مهندسين وشوية ناس تانيين*
 
-A free iOS, iPad and Android app for engineers everywhere, in English and Arabic.
+A free iOS, iPad and Android app for engineers everywhere, in English and Arabic, with dark and light themes (or follow the phone).
 
 | | |
 |---|---|

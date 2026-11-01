@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Row, Txt, haptic } from './ui';
-import { colors, fonts, radius } from '../theme';
+import { fonts, radius, useColors, makeStyles, useTheme } from '../theme';
 import { useApp } from '../lib/store';
 import { levelFor } from '../lib/i18n';
 import { flag } from '../lib/countries';
@@ -23,9 +23,24 @@ export const DISC_COLOR: Record<Discipline, string> = {
   petroleum: '#F472B6',
   general: '#A3B1C6',
 };
+/** Deeper versions that stay readable on the light theme. */
+const DISC_COLOR_LIGHT: Record<Discipline, string> = {
+  civil: '#C2410C',
+  structural: '#DC2626',
+  mechanical: '#0369A1',
+  electrical: '#A16207',
+  chemical: '#15803D',
+  architecture: '#7E22CE',
+  software: '#0284C7',
+  industrial: '#475569',
+  petroleum: '#BE185D',
+  general: '#52627A',
+};
+export const useDiscColors = () => (useTheme().name === 'light' ? DISC_COLOR_LIGHT : DISC_COLOR);
 
 export function Avatar({ handle, discipline, size = 36 }: { handle: string; discipline: Discipline; size?: number }) {
-  const c = DISC_COLOR[discipline];
+  const styles = useStyles();
+  const c = useDiscColors()[discipline];
   return (
     <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 3.2, borderColor: c, backgroundColor: `${c}22` }]}>
       <Txt style={{ fontFamily: fonts.monoSemi, fontSize: size * 0.38, lineHeight: size * 0.5, color: c, textAlign: 'center' }}>{initials(handle)}</Txt>
@@ -34,6 +49,8 @@ export function Avatar({ handle, discipline, size = 36 }: { handle: string; disc
 }
 
 export function LevelBadge({ reputation }: { reputation: number }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { locale } = useApp();
   const { level, index } = levelFor(reputation);
   const color = index >= 4 ? colors.accent : index >= 2 ? colors.cyan : colors.textMuted;
@@ -67,6 +84,8 @@ export function AuthorLine({ author, time }: { author: Author; time?: string }) 
 
 /** Up/down votes; your own posts can't be voted on. */
 export function VoteBox({ score, myVote, disabled, onVote, horizontal }: { score: number; myVote: -1 | 0 | 1; disabled?: boolean; onVote: (v: -1 | 0 | 1) => void; horizontal?: boolean }) {
+  const colors = useColors();
+  const styles = useStyles();
   const press = (v: -1 | 1) => {
     if (disabled) return;
     haptic.select();
@@ -86,8 +105,9 @@ export function VoteBox({ score, myVote, disabled, onVote, horizontal }: { score
 }
 
 export function DisciplineTag({ discipline }: { discipline: Discipline }) {
+  const styles = useStyles();
   const { disc, rtl } = useApp();
-  const c = DISC_COLOR[discipline];
+  const c = useDiscColors()[discipline];
   return (
     <View style={[styles.tag, { backgroundColor: `${c}1F` }]}>
       <Txt style={{ fontFamily: rtl ? fonts.arabicMedium : fonts.mono, fontSize: 11, lineHeight: 15, color: c }}>{disc(discipline)}</Txt>
@@ -95,9 +115,9 @@ export function DisciplineTag({ discipline }: { discipline: Discipline }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   avatar: { borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
   badge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: radius.sm, borderWidth: 1 },
   vote: { alignItems: 'center' },
   tag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.sm, alignSelf: 'flex-start' },
-});
+}));

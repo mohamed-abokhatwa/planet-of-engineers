@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackHeader } from '../components/BackHeader';
 import { BlueprintGrid, Row, haptic } from '../components/ui';
-import { colors, column, fonts, radius, space } from '../theme';
+import { column, fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { evaluate, formatResult, type AngleMode } from '../tools/expr';
 
@@ -36,6 +36,8 @@ const EXTRA: K[] = [
 ];
 
 export default function CalculatorScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { tr } = useApp();
   const insets = useSafeAreaInsets();
   const [expr, setExpr] = useState('');
@@ -122,7 +124,7 @@ export default function CalculatorScreen() {
   };
 
   const keyStyle = (k: K) => [styles.key, k.kind === 'num' && styles.keyNum, k.kind === 'op' && styles.keyOp, k.kind === 'eq' && styles.keyEq, k.kind === 'ac' && styles.keyAc];
-  const keyText = (k: K) => [styles.keyText, k.kind === 'fn' && styles.keyFnText, k.kind === 'eq' && { color: colors.bgDeep }, k.kind === 'ac' && { color: colors.bad }, k.kind === 'op' && { color: colors.accent }];
+  const keyText = (k: K) => [styles.keyText, k.kind === 'fn' && styles.keyFnText, k.kind === 'eq' && { color: colors.onAccent }, k.kind === 'ac' && { color: colors.bad }, k.kind === 'op' && { color: colors.accent }];
 
   return (
     <View style={styles.fill}>
@@ -193,9 +195,9 @@ export default function CalculatorScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   fill: { flex: 1, backgroundColor: colors.bg },
-  display: { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineStrong, backgroundColor: 'rgba(4,11,21,0.92)', padding: space.md, minHeight: 130 },
+  display: { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineStrong, backgroundColor: colors.display, padding: space.md, minHeight: 130 },
   modeTag: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.sm, backgroundColor: colors.cyanSoft },
   modeText: { fontFamily: fonts.monoSemi, fontSize: 11, color: colors.cyan },
   expr: { fontFamily: fonts.mono, fontSize: 26, lineHeight: 36, color: colors.text, textAlign: 'right', marginTop: space.sm },
@@ -204,9 +206,9 @@ const styles = StyleSheet.create({
   extra: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface },
   key: { flex: 1, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, minHeight: 44 },
   keyNum: { backgroundColor: colors.surfaceRaised },
-  keyOp: { backgroundColor: 'rgba(255,122,26,0.10)' },
+  keyOp: { backgroundColor: colors.accentTint },
   keyEq: { backgroundColor: colors.accent, borderColor: colors.accent },
-  keyAc: { backgroundColor: 'rgba(248,113,113,0.10)' },
+  keyAc: { backgroundColor: colors.badSoft },
   keyText: { fontFamily: fonts.monoSemi, fontSize: 20, color: colors.text },
   keyFnText: { fontFamily: fonts.mono, fontSize: 14.5, color: colors.cyan },
-});
+}));

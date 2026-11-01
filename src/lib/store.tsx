@@ -8,6 +8,7 @@ import { DemoApi } from '../data/demoApi';
 import { SupabaseApi } from '../data/supabaseApi';
 import { disciplineLabels, format, isLocale, roleLabels, strings, type Locale, type StringKey } from './i18n';
 import type { Discipline, Role } from './types';
+import { ThemeProvider, type ThemeMode } from '../theme';
 
 const PREFS_KEY = 'poe.prefs.v1';
 const REQUIRE_BACKEND = process.env.EXPO_PUBLIC_REQUIRE_BACKEND === '1';
@@ -16,6 +17,8 @@ export interface Prefs {
   onboarded: boolean;
   profile: Profile;
   reminders: boolean;
+  /** Look and feel: dark blueprint, light blueprint, or follow the phone. */
+  theme: ThemeMode;
 }
 
 function createApi(): Api | null {
@@ -42,6 +45,7 @@ const defaults = (): Prefs => ({
   onboarded: false,
   profile: { handle: '', discipline: 'civil', country: getLocales()[0]?.regionCode ?? 'XX', years: 3, role: 'engineer', locale: deviceLocale() },
   reminders: true,
+  theme: 'dark',
 });
 
 interface Ctx {
@@ -77,6 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (raw) {
           const saved = { ...defaults(), ...JSON.parse(raw) } as Prefs;
           if (!isLocale(saved.profile.locale)) saved.profile.locale = 'en';
+          if (!['dark', 'light', 'system'].includes(saved.theme)) saved.theme = 'dark';
           setPrefsState(saved);
         }
       } catch {}
@@ -132,7 +137,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [ready, prefs, locale, setPrefs, setProfile, completeOnboarding, reset, version],
   );
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      <ThemeProvider mode={prefs.theme}>{children}</ThemeProvider>
+    </AppContext.Provider>
+  );
 }
 
 export function useApp() {

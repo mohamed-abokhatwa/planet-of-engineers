@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { Row, Txt } from './ui';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 
 /** Accepts "1,5" or Arabic-Indic digits as well as "1.5". */
 export function parseNumber(s: string) {
@@ -11,6 +11,8 @@ export function parseNumber(s: string) {
 }
 
 export function NumberField({ label, value, unit, onChange }: { label: string; value: number; unit?: string; onChange: (n: number) => void }) {
+  const colors = useColors();
+  const styles = useStyles();
   const [text, setText] = useState(Number.isFinite(value) ? String(value) : '');
   const [focused, setFocused] = useState(false);
   return (
@@ -38,7 +40,7 @@ export function NumberField({ label, value, unit, onChange }: { label: string; v
   );
 }
 
-const styles = StyleSheet.create({
-  box: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: space.md, backgroundColor: 'rgba(255,255,255,0.025)' },
+const useStyles = makeStyles((colors) => ({
+  box: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: space.md, backgroundColor: colors.field },
   input: { flex: 1, height: 48, color: colors.text, fontFamily: fonts.monoSemi, fontSize: 17, textAlign: 'left' },
-});
+}));

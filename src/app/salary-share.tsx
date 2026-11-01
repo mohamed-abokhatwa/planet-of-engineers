@@ -1,18 +1,20 @@
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { BackHeader } from '../components/BackHeader';
 import { NumberField } from '../components/NumberField';
 import { CountrySheet, SelectField, SheetList } from '../components/Pickers';
 import { Sheet } from '../components/Sheet';
 import { Button, Card, Row, Screen, Txt, haptic } from '../components/ui';
-import { colors, radius, space } from '../theme';
+import { radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { CURRENCIES, countryName, findCountry, flag } from '../lib/countries';
 import { DISCIPLINES, type Discipline } from '../lib/types';
 
 export default function SalaryShareScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, api, prefs, locale, disc, touch } = useApp();
   const [country, setCountry] = useState(prefs.profile.country);
   const [discipline, setDiscipline] = useState<Discipline>(prefs.profile.discipline);
@@ -49,7 +51,7 @@ export default function SalaryShareScreen() {
       <Screen contentStyle={{ flexGrow: 1, justifyContent: 'center' }}>
         <View style={{ alignItems: 'center' }}>
           <View style={styles.doneIcon}>
-            <Ionicons name="checkmark" size={36} color={colors.bgDeep} />
+            <Ionicons name="checkmark" size={36} color={colors.onAccent} />
           </View>
           <Txt v="title" center style={{ marginTop: space.lg }}>
             {t('thanksSalary')}
@@ -123,7 +125,7 @@ export default function SalaryShareScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   stepBtn: { width: 44, height: 44, borderRadius: 12, borderWidth: 1, borderColor: colors.lineStrong, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface },
   doneIcon: { width: 80, height: 80, borderRadius: radius.xl, backgroundColor: colors.good, alignItems: 'center', justifyContent: 'center' },
-});
+}));

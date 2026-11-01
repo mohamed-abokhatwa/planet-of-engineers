@@ -1,15 +1,17 @@
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { memo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { Card, PressableScale, Row, Txt } from './ui';
 import { AuthorLine, DisciplineTag } from './People';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { timeAgo } from '../lib/format';
 import type { Question } from '../lib/types';
 
 export const QuestionCard = memo(function QuestionCard({ q }: { q: Question }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, locale } = useApp();
   const answered = !!q.acceptedAnswerId;
   return (
@@ -40,8 +42,8 @@ export const QuestionCard = memo(function QuestionCard({ q }: { q: Question }) {
               <Txt style={styles.stat}>{q.score}</Txt>
             </Row>
             <Row gap={4} style={[styles.answers, answered && styles.answered]}>
-              <Ionicons name={answered ? 'checkmark' : 'chatbubble-outline'} size={13} color={answered ? colors.bgDeep : colors.textMuted} />
-              <Txt style={[styles.stat, answered && { color: colors.bgDeep }]}>{q.answerCount}</Txt>
+              <Ionicons name={answered ? 'checkmark' : 'chatbubble-outline'} size={13} color={answered ? colors.onAccent : colors.textMuted} />
+              <Txt style={[styles.stat, answered && { color: colors.onAccent }]}>{q.answerCount}</Txt>
             </Row>
           </Row>
         </Row>
@@ -55,9 +57,9 @@ export const QuestionCard = memo(function QuestionCard({ q }: { q: Question }) {
   );
 });
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   thumb: { width: 64, height: 64, borderRadius: radius.sm, backgroundColor: colors.surfaceRaised },
   stat: { fontFamily: fonts.monoSemi, fontSize: 13, lineHeight: 18, color: colors.textMuted },
   answers: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line },
   answered: { backgroundColor: colors.good, borderColor: colors.good },
-});
+}));

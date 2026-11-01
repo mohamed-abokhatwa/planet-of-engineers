@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Card, Row, Txt, haptic } from './ui';
 import { DisciplineTag } from './People';
-import { colors, fonts, radius, space } from '../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { CHALLENGES } from '../data/challenges';
 import type { TodayChallenge } from '../lib/types';
@@ -11,6 +11,8 @@ import type { TodayChallenge } from '../lib/types';
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 export function ChallengeCard({ today, streak, onAnswered }: { today: TodayChallenge; streak: number; onAnswered: () => void }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, tr, api, rtl } = useApp();
   const q = CHALLENGES[today.index];
   const [picked, setPicked] = useState<number | null>(today.answered?.choice ?? null);
@@ -63,7 +65,7 @@ export function ChallengeCard({ today, streak, onAnswered }: { today: TodayChall
               style={[styles.opt, { flexDirection: rtl ? 'row-reverse' : 'row' }, tone === 'good' && styles.optGood, tone === 'bad' && styles.optBad, tone === 'dim' && { opacity: 0.5 }]}
             >
               <View style={[styles.letter, tone === 'good' && { backgroundColor: colors.good }, tone === 'bad' && { backgroundColor: colors.bad }]}>
-                <Txt style={{ fontFamily: fonts.monoSemi, fontSize: 12, lineHeight: 16, color: tone === 'good' || tone === 'bad' ? colors.bgDeep : colors.textMuted }}>{LETTERS[i]}</Txt>
+                <Txt style={{ fontFamily: fonts.monoSemi, fontSize: 12, lineHeight: 16, color: tone === 'good' || tone === 'bad' ? colors.onAccent : colors.textMuted }}>{LETTERS[i]}</Txt>
               </View>
               <Txt style={{ flex: 1, fontSize: 14.5 }}>{tr(o)}</Txt>
               {tone === 'good' ? <Ionicons name="checkmark-circle" size={18} color={colors.good} /> : tone === 'bad' ? <Ionicons name="close-circle" size={18} color={colors.bad} /> : null}
@@ -86,10 +88,10 @@ export function ChallengeCard({ today, streak, onAnswered }: { today: TodayChall
   );
 }
 
-const styles = StyleSheet.create({
-  opt: { alignItems: 'center', gap: 10, padding: 11, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: 'rgba(255,255,255,0.025)' },
-  optGood: { borderColor: colors.good, backgroundColor: 'rgba(74,222,128,0.10)' },
-  optBad: { borderColor: colors.bad, backgroundColor: 'rgba(248,113,113,0.10)' },
+const useStyles = makeStyles((colors) => ({
+  opt: { alignItems: 'center', gap: 10, padding: 11, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.field },
+  optGood: { borderColor: colors.good, backgroundColor: colors.goodSoft },
+  optBad: { borderColor: colors.bad, backgroundColor: colors.badSoft },
   letter: { width: 24, height: 24, borderRadius: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surfaceRaised },
   explain: { marginTop: space.md, paddingTop: space.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.lineStrong },
-});
+}));

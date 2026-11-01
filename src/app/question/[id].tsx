@@ -1,12 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Image, Pressable, TextInput, View } from 'react-native';
 import { BackHeader } from '../../components/BackHeader';
 import { ReportSheet, type ReportTarget } from '../../components/ReportSheet';
 import { AuthorLine, DisciplineTag, VoteBox } from '../../components/People';
 import { Button, Card, Loader, Row, Screen, Txt, haptic } from '../../components/ui';
-import { colors, fonts, radius, space } from '../../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../../theme';
 import { useApp, useLoad } from '../../lib/store';
 import { timeAgo } from '../../lib/format';
 import { checkPostText } from '../../lib/moderation';
@@ -18,6 +18,8 @@ const ERR: Record<Extract<PostResult<unknown>, { ok: false }>['reason'], StringK
 };
 
 export default function QuestionScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t, api, locale, rtl, touch } = useApp();
   const data = useLoad((a) => a.getQuestion(String(id)));
@@ -158,9 +160,9 @@ export default function QuestionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   image: { width: '100%', aspectRatio: 4 / 3, borderRadius: radius.md, marginTop: space.md, backgroundColor: colors.surfaceRaised },
-  accepted: { borderColor: 'rgba(74,222,128,0.6)' },
+  accepted: { borderColor: colors.goodLine },
   acceptBtn: { marginTop: space.sm, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.sm, borderWidth: 1, borderColor: 'rgba(74,222,128,0.5)' },
-  input: { minHeight: 120, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, color: colors.text, padding: space.md, fontSize: 15, backgroundColor: 'rgba(255,255,255,0.025)' },
-});
+  input: { minHeight: 120, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, color: colors.text, padding: space.md, fontSize: 15, backgroundColor: colors.field },
+}));

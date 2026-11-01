@@ -8,7 +8,7 @@ import { ChallengeCard } from '../../components/ChallengeCard';
 import { QuestionCard } from '../../components/QuestionCard';
 import { Avatar, LevelBadge } from '../../components/People';
 import { PlanetMark } from '../../components/PlanetMark';
-import { colors, column, fonts, radius, space } from '../../theme';
+import { column, fonts, radius, space, useColors, makeStyles } from '../../theme';
 import { useApp, useLoad } from '../../lib/store';
 import { countryName, flag } from '../../lib/countries';
 import { fmtNum } from '../../lib/format';
@@ -25,6 +25,8 @@ const QUICK = [
 ];
 
 export default function PlanetScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, tr, locale, disc, prefs, api, touch, rtl } = useApp();
   const insets = useSafeAreaInsets();
   const planet = useLoad((a) => a.planet());
@@ -185,12 +187,12 @@ export default function PlanetScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   fill: { flex: 1, backgroundColor: colors.bg },
   demo: { alignSelf: 'center', paddingHorizontal: 10, paddingVertical: 3, borderRadius: radius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, marginBottom: space.md },
-  quick: { height: 88, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineStrong, backgroundColor: 'rgba(12,26,44,0.92)', alignItems: 'center', justifyContent: 'center', padding: 6 },
+  quick: { height: 88, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineStrong, backgroundColor: colors.panel, alignItems: 'center', justifyContent: 'center', padding: 6 },
   leader: { paddingVertical: 9 },
   leaderBorder: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
   barTrack: { height: 6, borderRadius: 3, backgroundColor: colors.surfaceRaised, overflow: 'hidden' },
   barFill: { height: 6, borderRadius: 3, backgroundColor: colors.cyan },
-});
+}));

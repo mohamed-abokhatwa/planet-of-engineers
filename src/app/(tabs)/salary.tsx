@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Card, Loader, Row, Screen, Txt } from '../../components/ui';
 import { CountrySheet, SelectField, SheetList } from '../../components/Pickers';
 import { Sheet } from '../../components/Sheet';
-import { colors, fonts, radius, space } from '../../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../../theme';
 import { useApp, useLoad } from '../../lib/store';
 import { countryName, flag } from '../../lib/countries';
 import { fmtMoney } from '../../lib/format';
@@ -13,6 +13,8 @@ import { MIN_SALARY_COUNT } from '../../data/api';
 import { DISCIPLINES, type Discipline } from '../../lib/types';
 
 export default function SalaryScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, locale, disc, prefs, rtl } = useApp();
   const [country, setCountry] = useState(prefs.profile.country);
   const [discipline, setDiscipline] = useState<Discipline>(prefs.profile.discipline);
@@ -125,10 +127,10 @@ export default function SalaryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   band: { paddingVertical: 12, gap: 8 },
   bandBorder: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
   track: { height: 10, borderRadius: radius.pill, backgroundColor: colors.surfaceRaised, overflow: 'hidden' },
-  range: { position: 'absolute', top: 0, bottom: 0, borderRadius: radius.pill, backgroundColor: 'rgba(92,200,255,0.45)' },
+  range: { position: 'absolute', top: 0, bottom: 0, borderRadius: radius.pill, backgroundColor: colors.cyanRange },
   median: { position: 'absolute', top: -1, width: 3, height: 12, marginLeft: -1.5, backgroundColor: colors.accent },
-});
+}));

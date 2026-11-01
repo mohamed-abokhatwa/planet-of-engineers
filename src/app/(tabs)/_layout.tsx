@@ -3,7 +3,7 @@ import type { BottomTabBarProps } from 'expo-router/tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts, radius, shadow } from '../../theme';
+import { fonts, radius, useColors, makeStyles, useShadow } from '../../theme';
 import { useApp } from '../../lib/store';
 import { haptic } from '../../components/ui';
 import type { StringKey } from '../../lib/i18n';
@@ -18,6 +18,9 @@ const TABS: Record<string, { icon: [IconName, IconName]; label: StringKey }> = {
 };
 
 function TabBar({ state, navigateToTab }: BottomTabBarProps) {
+  const colors = useColors();
+  const styles = useStyles();
+  const shadow = useShadow();
   const insets = useSafeAreaInsets();
   const { t, rtl } = useApp();
   const routes = rtl ? [...state.routes].reverse() : state.routes;
@@ -54,6 +57,7 @@ function TabBar({ state, navigateToTab }: BottomTabBarProps) {
 }
 
 export default function TabsLayout() {
+  const colors = useColors();
   return (
     <Tabs tabBar={(p) => <TabBar {...p} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.bg } }}>
       <Tabs.Screen name="index" />
@@ -65,13 +69,13 @@ export default function TabsLayout() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 12, alignItems: 'center' },
   bar: {
     width: '100%',
     maxWidth: 560,
     flexDirection: 'row',
-    backgroundColor: Platform.OS === 'android' ? '#0B1828' : 'rgba(11,24,40,0.97)',
+    backgroundColor: Platform.OS === 'android' ? colors.tabBarSolid : colors.tabBar,
     borderRadius: radius.xl,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.lineStrong,
@@ -80,4 +84,4 @@ const styles = StyleSheet.create({
   item: { flex: 1, alignItems: 'center', gap: 3 },
   label: { color: colors.textMuted },
   indicator: { position: 'absolute', top: -9, width: 22, height: 2, borderRadius: 1, backgroundColor: colors.accent },
-});
+}));

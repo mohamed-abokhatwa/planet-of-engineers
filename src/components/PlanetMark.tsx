@@ -1,8 +1,9 @@
 import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
-import { colors } from '../theme';
+import { useColors } from '../theme';
 
 /** The app mark: a blueprint planet (meridians and parallels) with a safety-orange orbit. */
 export function PlanetMark({ size = 120 }: { size?: number }) {
+  const colors = useColors();
   return (
     <Svg width={size} height={size} viewBox="0 0 120 120" accessibilityLabel="Planet of Engineers">
       {/* back half of the orbit */}

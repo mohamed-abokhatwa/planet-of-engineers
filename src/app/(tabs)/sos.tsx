@@ -1,15 +1,18 @@
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlueprintGrid, Card, Chip, Loader, PressableScale, Row, Txt } from '../../components/ui';
 import { QuestionCard } from '../../components/QuestionCard';
-import { colors, column, radius, shadow, space } from '../../theme';
+import { column, radius, space, useColors, makeStyles, useShadow } from '../../theme';
 import { useApp, useLoad } from '../../lib/store';
 import { DISCIPLINES, type Discipline, type Question, type QuestionFilter } from '../../lib/types';
 
 export default function SosScreen() {
+  const colors = useColors();
+  const styles = useStyles();
+  const shadow = useShadow();
   const { t, disc, rtl, touch } = useApp();
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<QuestionFilter>('new');
@@ -66,8 +69,8 @@ export default function SosScreen() {
       <View style={[styles.fabWrap, { bottom: insets.bottom + 92 }, rtl ? { left: 20 } : { right: 20 }]} pointerEvents="box-none">
         <PressableScale onPress={() => router.push('/ask')} accessibilityLabel={t('ask')}>
           <Row gap={8} style={[styles.fab, shadow]}>
-            <Ionicons name="add" size={22} color={colors.bgDeep} />
-            <Txt style={{ color: colors.bgDeep, fontSize: 15, fontWeight: '600' }}>{t('ask')}</Txt>
+            <Ionicons name="add" size={22} color={colors.onAccent} />
+            <Txt style={{ color: colors.onAccent, fontSize: 15, fontWeight: '600' }}>{t('ask')}</Txt>
           </Row>
         </PressableScale>
       </View>
@@ -75,8 +78,8 @@ export default function SosScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   fill: { flex: 1, backgroundColor: colors.bg },
   fabWrap: { position: 'absolute' },
   fab: { backgroundColor: colors.accent, paddingHorizontal: 18, height: 50, borderRadius: radius.pill },
-});
+}));

@@ -1,9 +1,9 @@
 import { router, type Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 import { Card, PressableScale, Row, Screen, Txt } from '../../components/ui';
-import { colors, fonts, radius, space } from '../../theme';
+import { fonts, radius, space, useColors, makeStyles } from '../../theme';
 import { useApp } from '../../lib/store';
 import { useFavourites } from '../../lib/toolPrefs';
 import { TOOLS, type ToolDef } from '../../tools/defs';
@@ -21,6 +21,8 @@ const norm = (s: string) =>
 const haystack = (x: ToolDef) => norm([x.title.en, x.title.ar, x.desc.en, x.desc.ar, x.group.en, x.group.ar, x.id].join(' '));
 
 export default function ToolsScreen() {
+  const colors = useColors();
+  const styles = useStyles();
   const { t, tr, rtl } = useApp();
   const [q, setQ] = useState('');
   const favs = useFavourites();
@@ -37,7 +39,7 @@ export default function ToolsScreen() {
       <Card accent={accent}>
         <Row gap={space.md}>
           <View style={[styles.icon, accent && { backgroundColor: colors.accent }]}>
-            <Ionicons name={icon} size={22} color={accent ? colors.bgDeep : colors.accent} />
+            <Ionicons name={icon} size={22} color={accent ? colors.onAccent : colors.accent} />
           </View>
           <View style={{ flex: 1 }}>
             <Txt v="heading">{tr(title)}</Txt>
@@ -153,8 +155,8 @@ export default function ToolsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   icon: { width: 44, height: 44, borderRadius: radius.md, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' },
-  search: { marginTop: space.md, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: space.md, backgroundColor: 'rgba(255,255,255,0.03)', alignItems: 'center' },
+  search: { marginTop: space.md, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: space.md, backgroundColor: colors.field, alignItems: 'center' },
   searchInput: { flex: 1, height: 46, color: colors.text, fontFamily: fonts.sans, fontSize: 15 },
-});
+}));
