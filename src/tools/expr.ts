@@ -5,7 +5,7 @@
 //   term    := unary (('*' | '/') unary | implicit-multiplication unary)*
 //   unary   := ('-' | '+') unary | power
 //   power   := postfix ('^' unary)?            (right-associative; -2^2 = -4)
-//   postfix := primary ('!' | '%')*
+//   postfix := primary ('!' | '%')*            (x% = x/100; after + or −, it is a % of the left side)
 //   primary := number | constant | function primary | '(' expr ')'
 
 export type AngleMode = 'deg' | 'rad';
@@ -101,10 +101,27 @@ export function evaluate(src: string, mode: AngleMode = 'deg', ans = 0): number 
     let v = term();
     while (isOp('+') || isOp('-')) {
       const op = toks[p++].v;
-      const r = term();
+      const start = p;
+      let r = term();
+      // "200 + 10%" means 200 + 10% of 200 (= 220), like phone and desk calculators.
+      if (endsWithBarePercent(start, p)) r *= v;
       v = op === '+' ? v + r : v - r;
     }
     return v;
+  };
+  // The term toks[a..b) ends in % and has no × ÷ at its top level, e.g. "10%" or "(5+5)%".
+  const endsWithBarePercent = (a: number, b: number) => {
+    const last = toks[b - 1];
+    if (!last || last.t !== 'op' || last.v !== '%') return false;
+    let depth = 0;
+    for (let i = a; i < b - 1; i++) {
+      const k = toks[i];
+      if (k.t !== 'op') continue;
+      if (k.v === '(') depth++;
+      else if (k.v === ')') depth--;
+      else if (depth === 0 && (k.v === '*' || k.v === '/' || k.v === '^')) return false;
+    }
+    return true;
   };
   const term = (): number => {
     let v = unary();

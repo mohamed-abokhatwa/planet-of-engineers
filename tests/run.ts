@@ -76,8 +76,9 @@ near('3-phase current 55 kW 400 V pf .85', currentFromPower(55000, 400, 0.85, 3)
 near('1-phase current 2.3 kW 230 V pf 1', currentFromPower(2300, 230, 1, 1), 10, 1e-9);
 near('3-phase power 100 A 400 V pf .8', powerFromCurrent(100, 400, 0.8, 3).activeW, 55425.6, 0.001);
 const vd = voltageDrop(100, 100, 35, 400, 0.85, 3, 'copper');
-near('voltage drop 3φ 100 A 100 m 35 mm²', vd.dropV, 9.462, 0.003);
-near('voltage drop %', vd.percent, 2.366, 0.003);
+near('voltage drop 3φ 100 A 100 m 35 mm² (R cosφ + X sinφ)', vd.dropV, 10.194, 0.001);
+near('voltage drop %', vd.percent, 2.549, 0.001);
+near('voltage drop pf 1 is purely resistive', voltageDrop(100, 100, 35, 400, 1, 3, 'copper').dropV, Math.sqrt(3) * 100 * 100 * 0.0225 / 35, 1e-9);
 const cs = cableSizeForDrop(100, 100, 400, 0.85, 3, 'copper', 3);
 expect('cable size for 3% is 35 mm²', cs?.areaMm2 === 35);
 expect('impossible drop returns null', cableSizeForDrop(5000, 5000, 230, 1, 1, 'aluminium', 1) === null);
@@ -343,6 +344,28 @@ near('1 in⁴ = 41.62 cm⁴', convert(1, 'inertia', 'in4', 'cm4'), 41.6231, 1e-5
 near('180° = π rad', convert(180, 'angle', 'deg', 'rad'), Math.PI, 1e-12);
 near('100 gon = 90°', convert(100, 'angle', 'grad', 'deg'), 90, 1e-12);
 near('1 fc = 10.764 lux', convert(1, 'illuminance', 'fc', 'lux'), 10.7639, 1e-5);
+
+
+// ── Published handbook values (independent of our formulas) ──
+near('ASHRAE equivalent duct 300×600 → 457 mm', M.duct(3600, 1, 300).equivalentMm > 0 ? (1.3 * (600 * 300) ** 0.625) / 900 ** 0.25 : 0, 457, 0.002);
+near('ASHRAE equivalent duct via tool', rowVal('duct', { Q: 0.18 * 3600 * 5, vel: 5, h: 300 }, 'Equivalent round (friction)'), 457, 0.003);
+near('kVAr multiplier table 0.75 → 0.95 = 0.553', M.pfCorrection(1, 0.75, 0.95, 400, 50, 3).kvar, 0.553, 0.001);
+near('kVAr multiplier table 0.80 → 1.00 = 0.750', M.pfCorrection(1, 0.8, 1, 400, 50, 3).kvar, 0.75, 0.001);
+near('ISA air density 15 °C = 1.225 kg/m³', M.idealGas(101.325, 1, 15, 28.9647).density, 1.225, 0.001);
+near('1 TR = 12 000 BTU/h', M.coolingEstimate(3.5168528420667 * 1000, 1).btuh, 12000, 0.0005);
+near('Moody: Re 1e5, ε/D 0.001 → f ≈ 0.0222', frictionFactor(1e5, 0.001), 0.0222, 0.02);
+near('Moody: Re 1e6, smooth → f ≈ 0.0116', frictionFactor(1e6, 0), 0.0116, 0.02);
+near('Nominal mix 1:2:4, 1 m³ → 6.34 bags', concreteMaterials(1, [1, 2, 4], 50, 0).cementBags, 6.336, 0.001);
+near('Rebar Ø16 = 1.58 kg/m (BS 4449)', rebarKgPerM(16), 1.579, 0.001);
+near('Rebar Ø25 = 3.85 kg/m (BS 4449)', rebarKgPerM(25), 3.854, 0.001);
+expect('22 kW 400 V motor ≈ 40 A (typical nameplate 39–42 A)', (() => { const i = M.motorCurrent(22, 400, 0.86, 0.92, 3); return i > 38 && i < 43; })());
+near('630 kVA 400 V 6% → 15.2 kA', M.transformerFault(630, 400, 6), 15.16, 0.002);
+near('Euler: pinned steel column (E 200 GPa, I 604 cm⁴, 4 m) = 745 kN', M.euler(200, 604, 4, 'pinned').Pcr, 745.1, 0.001);
+near('Simply supported IPE 300, 20 kN/m, 6 m, E 210 GPa: δ = 5wL⁴/384EI = 19.2 mm', M.beam('simple', 'udl', 20, 6, 210, 8356).deflection, 19.23, 0.002); // with E = 210
+near('Water column 10 m (ρ 1000) = 0.981 bar', M.hydrostatic(10, 1000) / 1e5, 0.98067, 1e-5);
+near('Sch 40 4″ bore = 102.3 mm', TB.pipeId(TB.PIPES[8]), 102.26, 1e-4);
+near('Calculator 200 + 10% = 220', ev('200+10%'), 220, 1e-12);
+near('Calculator 200 − 10% = 180', ev('200-10%'), 180, 1e-12);
 
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

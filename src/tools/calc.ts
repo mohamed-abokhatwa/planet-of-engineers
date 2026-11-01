@@ -158,11 +158,18 @@ export function powerFromCurrent(i: number, v: number, pf: number, phases: 1 | 3
 export const RESISTIVITY = { copper: 0.0225, aluminium: 0.036 } as const;
 export type Conductor = keyof typeof RESISTIVITY;
 
-/** Voltage drop (resistive part, simplified), volts and % of supply. */
+/** Typical reactance of a multicore LV cable, Ω/m (0.08 Ω/km). */
+export const CABLE_REACTANCE = 0.08e-3;
+
+/**
+ * Voltage drop ΔV = k · I · L · (R cosφ + X sinφ), k = √3 (three-phase, line-to-line) or 2 (single-phase).
+ * R from resistivity at operating temperature, X = 0.08 Ω/km. Volts and % of supply.
+ */
 export function voltageDrop(i: number, lengthM: number, areaMm2: number, v: number, pf: number, phases: 1 | 3, conductor: Conductor) {
-  const rho = RESISTIVITY[conductor];
+  const R = RESISTIVITY[conductor] / areaMm2; // Ω/m
+  const sin = Math.sqrt(Math.max(0, 1 - pf * pf));
   const k = phases === 3 ? Math.sqrt(3) : 2;
-  const dropV = (k * rho * lengthM * i * pf) / areaMm2;
+  const dropV = k * i * lengthM * (R * pf + CABLE_REACTANCE * sin);
   return { dropV, percent: (dropV / v) * 100 };
 }
 

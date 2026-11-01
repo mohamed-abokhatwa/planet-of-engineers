@@ -102,15 +102,17 @@ export const MORE_TOOLS: ToolDef[] = [
       if (!pos(value, n(v, 'L'), n(v, 'E'), n(v, 'I'))) return null;
       const r = beam(v.support as Support, v.load as BeamLoad, value, n(v, 'L'), n(v, 'E'), n(v, 'I'));
       const ratio = r.spanOverDeflection;
+      // usual limits: spans L/360 (finishes) and L/250; cantilevers L/180 and L/125
+      const lim = v.support === 'cantilever' ? [180, 125] : [360, 250];
       return {
         rows: [
           row(t('Max bending moment', 'أقصى عزم انحناء'), r.moment, 'kN·m', 2, hi),
           ...(r.momentMid !== null ? [row(t('Midspan moment', 'العزم عند المنتصف'), r.momentMid, 'kN·m', 2)] : []),
           row(t('Max shear', 'أقصى قوة قص'), r.shear, 'kN', 2, hi),
           row(t('Max deflection', 'أقصى ترخيم'), r.deflection, 'mm', 2, hi),
-          row(t('Span / deflection', 'البحر / الترخيم'), Number.isFinite(ratio) ? `L / ${Math.round(ratio)}` : '—', undefined, undefined, { tone: ratio >= 360 ? 'good' : ratio >= 250 ? 'warn' : 'bad' }),
+          row(t('Span / deflection', 'البحر / الترخيم'), Number.isFinite(ratio) ? `L / ${Math.round(ratio)}` : '—', undefined, undefined, { tone: ratio >= lim[0] ? 'good' : ratio >= lim[1] ? 'warn' : 'bad' }),
         ],
-        note: t('Elastic, prismatic beam, self-weight not included unless added to w. Default I = IPE 300. Typical limits L/360 (finishes) and L/250 (general).', 'كمرة مرنة منتظمة المقطع، الوزن الذاتي غير محسوب إلا إذا أضفته إلى w. القيمة الافتراضية لـ I هي IPE 300. الحدود المعتادة L/360 (التشطيبات) و L/250 (عام).'),
+        note: t('Elastic, prismatic beam, self-weight not included unless added to w. Default I = IPE 300. Typical limits: spans L/360 (finishes) and L/250, cantilevers L/180.', 'كمرة مرنة منتظمة المقطع، الوزن الذاتي غير محسوب إلا إذا أضفته إلى w. القيمة الافتراضية لـ I هي IPE 300. الحدود المعتادة: البحور L/360 (التشطيبات) و L/250، والكوابيل L/180.'),
       };
     },
   },
@@ -141,7 +143,7 @@ export const MORE_TOOLS: ToolDef[] = [
           ...(r.radiusOfGyration ? [row(t('Radius of gyration', 'نصف قطر القصور'), r.radiusOfGyration, 'mm', 1)] : []),
           ...(r.slenderness ? [row(t('Slenderness KL/r', 'النحافة KL/r'), r.slenderness, undefined, 0, { highlight: true, tone: r.slenderness <= 120 ? 'good' : r.slenderness <= 200 ? 'warn' : 'bad' })] : []),
         ],
-        note: t('Ideal elastic buckling only; design codes reduce this for imperfections and yielding. Defaults: IPE 300 minor axis.', 'انبعاج مرن مثالي فقط؛ أكواد التصميم تخفّض القيمة بسبب العيوب والخضوع. القيم الافتراضية: IPE 300 حول المحور الضعيف.'),
+        note: t('Ideal elastic buckling with theoretical K; design codes use larger K for fixed ends (0.65–0.8) and reduce the load for imperfections and yielding. Defaults: IPE 300 minor axis.', 'انبعاج مرن مثالي بمعامل K نظري؛ أكواد التصميم تستخدم K أكبر للأطراف المثبتة (0.65–0.8) وتخفّض الحمل بسبب العيوب والخضوع. القيم الافتراضية: IPE 300 حول المحور الضعيف.'),
       };
     },
   },
@@ -559,7 +561,7 @@ export const MORE_TOOLS: ToolDef[] = [
           row(t('Full-load current', 'تيار الحمل الكامل'), I, 'A', 1, hi),
           row(t('Input power', 'القدرة الداخلة'), kW / (e / 100), 'kW', 2),
           row(t('Starting current, DOL (≈ 6–7×)', 'تيار البدء المباشر (≈ 6–7×)'), `${(I * 6).toFixed(0)} – ${(I * 7).toFixed(0)}`, 'A'),
-          ...(ph(v) === 3 ? [row(t('Starting current, star-delta (≈ ⅓ DOL)', 'تيار البدء ستار-دلتا (≈ ⅓)'), `${(I * 2).toFixed(0)} – ${(I * 2.33).toFixed(0)}`, 'A')] : []),
+          ...(ph(v) === 3 ? [row(t('Starting current, star-delta (≈ ⅓ DOL)', 'تيار البدء ستار-دلتا (≈ ⅓)'), `${(I * 2).toFixed(0)} – ${((I * 7) / 3).toFixed(0)}`, 'A')] : []),
         ],
         note: t('Use the nameplate current when available. Size cables and protection to the code.', 'استخدم تيار لوحة البيانات عند توفرها. حدد الكابلات والحماية حسب الكود.'),
       };
@@ -696,13 +698,13 @@ export const MORE_TOOLS: ToolDef[] = [
       if (!pos(E, sun, pw) || !fin(loss) || loss < 0 || loss >= 100) return null;
       const r = solar(E, sun, pw, loss);
       const days = n(v, 'days');
-      const ah = pos(days, n(v, 'bv')) ? (E * days * 1000) / (n(v, 'bv') * 0.8) : 0;
+      const ah = pos(days, n(v, 'bv')) ? (E * days * 1000) / (n(v, 'bv') * 0.8 * 0.9) : 0; // 80% DoD, 90% inverter
       return {
         rows: [
           row(t('Array size', 'قدرة المصفوفة'), r.kWp, 'kWp', 2, hi),
           row(t('Panels', 'عدد الألواح'), r.panels, undefined, 0, hi),
           row(t('Installed', 'القدرة المركبة'), (r.panels * pw) / 1000, 'kWp', 2),
-          ...(ah > 0 ? [row(t('Battery (80% DoD)', 'البطاريات (تفريغ 80٪)'), ah, 'Ah', 0, hi)] : []),
+          ...(ah > 0 ? [row(t('Battery (80% DoD, 90% inverter)', 'البطاريات (تفريغ 80٪، كفاءة إنفرتر 90٪)'), ah, 'Ah', 0, hi)] : []),
         ],
         note: t('Peak sun hours depend on site and month; use the worst month for off-grid.', 'ساعات الذروة تعتمد على الموقع والشهر؛ استخدم أسوأ شهر للأنظمة المنفصلة.'),
       };

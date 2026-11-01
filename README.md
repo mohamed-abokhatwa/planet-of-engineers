@@ -52,7 +52,8 @@ src/data/           api.ts (interface), demoApi.ts (offline), supabaseApi.ts (li
 src/lib/            i18n, store, moderation, countries, format
 src/components/     blueprint UI kit, cards, pickers, sheets
 supabase/           schema with row-level security, challenge answer key, cleanup job
-tests/run.ts        1,383 checks: every tool and option, calculator parser, tables, filters, challenge bank, DB key sync
+tests/run.ts        1,403 checks: every tool and option, handbook values, calculator, tables, filters, challenge bank, DB key sync
+tests/crosscheck/   independent Python re-implementation of every tool (npm run crosscheck); see VERIFICATION.md
 docs/               public support / privacy / terms pages (GitHub Pages)
 ```
 

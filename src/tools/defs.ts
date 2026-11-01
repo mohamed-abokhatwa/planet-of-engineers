@@ -204,7 +204,7 @@ const BASE_TOOLS: ToolDef[] = [
           { label: t('Within limit?', 'ضمن الحد؟'), value: ok ? t('Yes', 'نعم') : t('No', 'لا'), tone: ok ? 'good' : 'bad' },
           { label: t('Smallest size for limit', 'أصغر مقطع يحقق الحد'), value: best ? best.areaMm2 : '—', unit: best ? 'mm²' : undefined, digits: 0, highlight: true },
         ],
-        note: t('Resistive drop at ~70 °C (Cu 0.0225, Al 0.036 Ω·mm²/m), reactance ignored. Always check current-carrying capacity and protection separately.', 'هبوط مقاومي عند ~70 °م (نحاس 0.0225، ألومنيوم 0.036 أوم·مم²/م) مع إهمال المفاعلة. راجع دائمًا سعة التيار والحماية بشكل منفصل.'),
+        note: t('ΔV = k·I·L·(R cosφ + X sinφ), R at ~70 °C (Cu 0.0225, Al 0.036 Ω·mm²/m), X = 0.08 Ω/km (multicore cable). Always check current-carrying capacity and protection separately.', 'ΔV = k·I·L·(R cosφ + X sinφ)، المقاومة عند ~70 °م (نحاس 0.0225، ألومنيوم 0.036 أوم·مم²/م)، المفاعلة 0.08 أوم/كم (كابل متعدد القلوب). راجع دائمًا سعة التيار والحماية بشكل منفصل.'),
       };
     },
   },

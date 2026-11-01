@@ -50,7 +50,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
-    "test": "tsx tests/run.ts"
+    "test": "tsx tests/run.ts",
+    "crosscheck": "tsx tests/crosscheck/dump.ts /tmp/poe-cases.json && python3 tests/crosscheck/reference.py /tmp/poe-cases.json"
   },
   "private": true
 }
