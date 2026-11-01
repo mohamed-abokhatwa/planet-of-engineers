@@ -36,7 +36,7 @@ export default function PlanetScreen() {
       >
         {api.mode === 'demo' && (
           <View style={styles.demo}>
-            <Txt v="mono" center style={{ fontSize: 10.5 }}>
+            <Txt v="small" center style={{ fontSize: 11, lineHeight: 16 }}>
               {t('demoBanner')}
             </Txt>
           </View>
