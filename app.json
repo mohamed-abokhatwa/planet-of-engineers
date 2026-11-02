@@ -77,8 +77,8 @@
     "owner": "abokhatwa",
     "description": "A home for engineers everywhere: offline tools, Site SOS answers, anonymous salary data and a daily challenge.",
     "extra": {
-      "supabaseUrl": "",
-      "supabaseAnonKey": "",
+      "supabaseUrl": "https://iflatdqhvnxedipcxuab.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmbGF0ZHFodm54ZWRpcGN4dWFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1OTMyOTAsImV4cCI6MjEwOTE2OTI5MH0.NhkXpyBSPnDH9GWRYj8i7Up13Pyv-QnU2JvxN1I1w6A",
       "router": {
         "asyncRoutes": {
           "web": true

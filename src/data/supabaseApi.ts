@@ -213,6 +213,7 @@ export class SupabaseApi implements Api {
     const { data: files } = await this.sb.storage.from(BUCKET).list(id, { limit: 1000 });
     if (files?.length) await this.sb.storage.from(BUCKET).remove(files.map((f) => `${id}/${f.name}`));
     await this.rpc('delete_my_account');
-    await this.sb.auth.signOut();
+    // The user no longer exists on the server, so only clear the session on this device.
+    await this.sb.auth.signOut({ scope: 'local' });
   }
 }
