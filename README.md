@@ -28,24 +28,32 @@ Without database keys the app runs on sample data stored on the device. Store bu
 ## Go live
 
 1. Create a free Supabase project and enable **Anonymous sign-ins** (Authentication → Sign In / Providers).
-2. In the SQL editor, run `supabase/migrations/0001_init.sql`, then `0002_challenge_keys.sql`, then `0003_cron.sql`.
-3. Add `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` as EAS environment variables, then build with EAS.
+2. In the SQL editor, run the files in `supabase/migrations/` in order: `0001_init.sql`, `0002_challenge_keys.sql`, `0003_cron.sql`, `0004_campus.sql` (roles, moderation, universities, mentors, board), `0005_universities.sql` (9,733 universities).
+3. Make yourself the owner (once): `select public.set_owner('YourUsername');`
+4. Add `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` as EAS environment variables, then build with EAS.
 
 No server functions are needed: every rule (text filters, rate limits, reputation, anonymity) runs inside the database. Full steps: [PUBLISHING.md](PUBLISHING.md).
 
 ## Moderation
 
-```sql
-select * from moderation_queue;                                   -- reported posts
-update questions set hidden = true where id = '…';                -- remove a question
-update answers set hidden = true where id = '…';                  -- remove an answer
-delete from auth.users where id = (select author_id from questions where id = '…');  -- ban the author
-```
+In the app: **Me → Moderation** (shown to staff only).
+
+| Role | Can do |
+|---|---|
+| **Owner** (you) | Everything below, plus make or remove moderators and university moderators |
+| **Moderator** | Review reports everywhere; hide, restore, pin or delete posts; approve training posts and new universities; warn, suspend or ban users (not other moderators or the owner) |
+| **University moderator** | The same, but only inside one university's community; warn members, or suspend them for up to 7 days |
+
+Roles live in a table users cannot write; every action is checked on the server and written to the activity log
+(Moderation → Log). Suspended or banned users cannot post, and the app shows them the reason.
+
+Make yourself the owner once, in the Supabase SQL editor: `select public.set_owner('YourUsername');`
 
 ## Project layout
 
 ```
-src/app/            screens (Expo Router): onboarding, 5 tabs, tool, converter, calculator, reference, question, ask, salary-share, leaderboard, card
+src/app/            screens (Expo Router): onboarding, 5 tabs, tool, converter, calculator, reference, question, ask, salary-share, leaderboard, card,
+                    campus, university, community/[id], mentors, opportunities, opportunity-new, practice, feed, moderation
 src/tools/          calc.ts + calc-more.ts (pure engineering maths), expr.ts (calculator parser),
                     tables.ts (reference data), defs.ts + defs-more.ts (tool inputs/results, bilingual)
 src/data/           api.ts (interface), demoApi.ts (offline), supabaseApi.ts (live), challenges.ts, seed.ts
@@ -53,6 +61,9 @@ src/lib/            i18n, store, moderation, countries, format
 src/components/     blueprint UI kit, cards, pickers, sheets
 supabase/           schema with row-level security, challenge answer key, cleanup job
 tests/run.ts        1,403 checks: every tool and option, handbook values, calculator, tables, filters, challenge bank, DB key sync
+tests/campus.test.ts  1,163 checks: practice questions (every numeric answer recomputed), university list, board link rules
+tests/db/           63 database tests on a local Postgres (roles, moderation scope, sanctions, communities, board): npm run test:db
+data/universities/  open university list (Hipo, MIT licence) used to build 0005_universities.sql
 tests/crosscheck/   independent Python re-implementation of every tool (npm run crosscheck); see VERIFICATION.md
 docs/               public support / privacy / terms pages (GitHub Pages)
 ```

@@ -4,7 +4,7 @@ import { Sheet } from './Sheet';
 import { Txt, haptic } from './ui';
 import { space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
-import type { ReportReason } from '../lib/types';
+import type { ReportKind, ReportReason } from '../lib/types';
 import type { StringKey } from '../lib/i18n';
 
 const REASONS: { r: ReportReason; k: StringKey }[] = [
@@ -15,7 +15,7 @@ const REASONS: { r: ReportReason; k: StringKey }[] = [
   { r: 'other', k: 'reportOther' },
 ];
 
-export type ReportTarget = { kind: 'question' | 'answer'; id: string } | null;
+export type ReportTarget = { kind: ReportKind; id: string } | null;
 
 export function ReportSheet({ target, onClose, onDone }: { target: ReportTarget; onClose: () => void; onDone?: () => void }) {
   const colors = useColors();

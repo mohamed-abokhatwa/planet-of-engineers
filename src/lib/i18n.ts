@@ -1,4 +1,5 @@
 import type { Discipline, Role } from './types';
+import { campusAr, campusEn } from './i18n-campus';
 
 export type Locale = 'en' | 'ar';
 export const LANGUAGES: { code: Locale; native: string; english: string; rtl: boolean }[] = [
@@ -164,6 +165,7 @@ const en = {
   editProfile: 'Edit profile',
   save: 'Save',
   verifyNote: 'Calculations are for estimation only. Verify with applicable codes and a licensed engineer.',
+  ...campusEn,
 };
 
 export type StringKey = keyof typeof en;
@@ -311,6 +313,7 @@ const ar: Record<StringKey, string> = {
   editProfile: 'تعديل الملف',
   save: 'حفظ',
   verifyNote: 'الحسابات تقديرية فقط. راجعها مع الأكواد المعتمدة ومهندس مرخص.',
+  ...campusAr,
 };
 
 export const strings: Record<Locale, Record<StringKey, string>> = { en, ar };

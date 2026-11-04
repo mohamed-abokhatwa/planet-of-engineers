@@ -56,6 +56,155 @@ export interface Question {
   acceptedAnswerId: string | null;
   createdAt: string;
   isMine: boolean;
+  category?: Category;
+  pinned?: boolean;
+  university?: { id: number; name: string } | null;
+  /** The mentor this question was addressed to. */
+  mentorHandle?: string | null;
+  authorRole?: Role;
+  /** Only visible to its author and to moderators. */
+  hidden?: boolean;
+}
+
+export type Category = 'general' | 'graduation';
+export type FeedScope = 'all' | 'university' | 'students' | 'for_me';
+export interface FeedQuery {
+  filter: QuestionFilter;
+  discipline: Discipline | null;
+  category?: Category | null;
+  scope?: FeedScope;
+  universityId?: number | null;
+  country?: string | null;
+}
+
+export interface University {
+  id: number;
+  name: string;
+  country: string;
+  members: number;
+  status: 'approved' | 'pending' | 'rejected';
+}
+export interface UniversityInfo extends University {
+  students: number;
+  mentors: number;
+  isMember: boolean;
+  web: string | null;
+  moderators: string[];
+}
+
+export interface Mentor {
+  handle: string;
+  discipline: Discipline;
+  country: string;
+  yearsBand: YearsBand;
+  reputation: number;
+  note: string | null;
+  role: Role;
+  answers: number;
+}
+
+export type OpportunityKind = 'internship' | 'training' | 'job' | 'graduate';
+export const OPPORTUNITY_KINDS: OpportunityKind[] = ['training', 'internship', 'graduate', 'job'];
+export interface Opportunity {
+  id: string;
+  kind: OpportunityKind;
+  title: string;
+  body: string;
+  country: string;
+  discipline: Discipline;
+  city: string | null;
+  applyUrl: string | null;
+  deadline: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  isMine: boolean;
+  authorHandle: string;
+}
+export interface OpportunityInput {
+  kind: OpportunityKind;
+  title: string;
+  body: string;
+  country: string;
+  discipline: Discipline;
+  city: string;
+  applyUrl: string;
+  deadline: string | null;
+}
+
+export type StaffRole = 'owner' | 'moderator' | 'uni_moderator';
+export interface StaffInfo {
+  role: StaffRole;
+  universityId: number | null;
+  universityName: string | null;
+}
+export interface StaffMember extends StaffInfo {
+  handle: string;
+  since: string;
+  grantedBy: string | null;
+}
+export type ModKind = 'question' | 'answer' | 'opportunity' | 'university';
+export type ModAction = 'hide' | 'restore' | 'delete' | 'approve' | 'reject' | 'pin' | 'unpin';
+export interface ModItem {
+  kind: ModKind;
+  id: string;
+  text: string;
+  detail: string;
+  author: string | null;
+  reportCount: number;
+  hidden: boolean;
+  createdAt: string;
+  universityId: number | null;
+  /** Report reasons; for a university request, its country. */
+  reasons: string | null;
+  pending: boolean;
+}
+export type SanctionKind = 'warn' | 'suspend' | 'ban';
+export interface Sanction {
+  kind: SanctionKind;
+  reason: string;
+  until: string | null;
+  lifted?: boolean;
+  createdAt: string;
+  by?: string | null;
+}
+export interface ModUser {
+  handle: string;
+  discipline: Discipline;
+  country: string;
+  role: Role;
+  reputation: number;
+  joined: string;
+  staffRole: StaffRole | null;
+  universityId: number | null;
+  universityName: string | null;
+  questions: number;
+  answers: number;
+  reportsAgainst: number;
+  canPost: boolean;
+  sanctions: Sanction[];
+}
+export interface ModLogEntry {
+  actor: string;
+  action: string;
+  targetKind: string;
+  targetId: string;
+  detail: string | null;
+  createdAt: string;
+}
+export interface Notice {
+  id: number;
+  kind: SanctionKind;
+  reason: string;
+  until: string | null;
+  createdAt: string;
+}
+export type LeaderScope = 'all' | 'students' | 'university';
+export interface UniRank {
+  universityId: number;
+  name: string;
+  country: string;
+  points: number;
+  members: number;
 }
 
 export interface Answer {
@@ -77,9 +226,16 @@ export interface AskInput {
   title: string;
   body: string;
   imageUri: string | null;
+  category?: Category;
+  /** Post in this university's community (members only). */
+  universityId?: number | null;
+  /** Address the question to a mentor. */
+  mentorHandle?: string | null;
 }
 
-export type PostResult<T> = { ok: true; value: T } | { ok: false; reason: 'contact' | 'link' | 'abuse' | 'scam' | 'too_short' | 'too_long' | 'rate' | 'network' };
+export type PostResult<T> =
+  | { ok: true; value: T }
+  | { ok: false; reason: 'contact' | 'link' | 'abuse' | 'scam' | 'too_short' | 'too_long' | 'rate' | 'network' | 'suspended' | 'not_member' | 'not_mentor' | 'invalid' };
 
 export interface SalaryInput {
   country: string;
@@ -117,6 +273,7 @@ export interface LeaderRow {
   country: string;
   points: number;
   isMe: boolean;
+  universityName?: string | null;
 }
 
 export interface PlanetStats {
@@ -134,6 +291,9 @@ export interface MeStats {
   questions: number;
   answers: number;
   accepted: number;
+  /** Unanswered questions addressed to me as a mentor. */
+  askedToMe?: number;
 }
 
 export type ReportReason = 'spam' | 'wrong' | 'offensive' | 'personal_info' | 'other';
+export type ReportKind = 'question' | 'answer' | 'opportunity';

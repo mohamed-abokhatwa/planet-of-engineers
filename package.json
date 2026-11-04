@@ -1,6 +1,6 @@
 {
   "name": "planet-of-engineers",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "expo-router/entry",
   "dependencies": {
     "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
@@ -51,7 +51,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
-    "test": "tsx tests/run.ts",
+    "test": "tsx tests/run.ts && tsx tests/campus.test.ts",
+    "test:db": "bash tests/db/run.sh",
     "crosscheck": "tsx tests/crosscheck/dump.ts /tmp/poe-cases.json && python3 tests/crosscheck/reference.py /tmp/poe-cases.json"
   },
   "private": true

@@ -12,6 +12,7 @@ import { LANGUAGES, levelFor } from '../../lib/i18n';
 import { countryName, flag } from '../../lib/countries';
 import { scheduleChallengeReminder } from '../../lib/notifications';
 import { LINKS, SUPPORT_EMAIL } from '../../lib/links';
+import { MenuCard } from '../../components/Campus';
 
 const THEMES: { mode: ThemeMode; icon: keyof typeof Ionicons.glyphMap; label: { en: string; ar: string } }[] = [
   { mode: 'dark', icon: 'moon-outline', label: { en: 'Dark', ar: 'داكن' } },
@@ -24,6 +25,7 @@ export default function MeScreen() {
   const styles = useStyles();
   const { t, tr, rtl, prefs, setPrefs, setProfile, locale, disc, roleName, reset, api } = useApp();
   const stats = useLoad((a) => a.meStats());
+  const staff = useLoad((a) => a.myStaff().catch(() => null));
   const [confirm, setConfirm] = useState(false);
   const p = prefs.profile;
   const lv = levelFor(stats.data?.reputation ?? 0);
@@ -98,6 +100,15 @@ export default function MeScreen() {
         onPress={() => router.push('/card')}
         style={{ marginTop: space.md }}
       />
+
+      <Txt v="label" style={{ marginTop: space.xl, marginBottom: space.sm }}>
+        {t('campus')}
+      </Txt>
+      <MenuCard icon="school-outline" title={t('universityRow')} sub={p.universityName ?? t('pickUniversity')} onPress={() => router.push('/university')} />
+      <MenuCard icon="people-outline" title={t('mentorRow')} sub={p.mentor ? t('mentorOn') : t('mentorsSub')} onPress={() => router.push('/mentors')} tint={colors.cyan} />
+      {staff.data ? (
+        <MenuCard icon="shield-checkmark-outline" title={t('moderationRow')} sub={t('staffLabel')} onPress={() => router.push('/moderation')} tint={colors.good} />
+      ) : null}
 
       <Txt v="label" style={{ marginTop: space.xl, marginBottom: space.sm }}>
         {t('settings')}
@@ -197,7 +208,7 @@ export default function MeScreen() {
         </Txt>
       </Pressable>
       <Txt v="mono" center style={{ fontSize: 10.5, color: colors.textFaint }}>
-        {t('appName')} · v1.0 · {api.mode}
+        {t("appName")} · v1.1 · {api.mode}
       </Txt>
 
       {/* In-app confirmation (works everywhere, including the web preview) */}

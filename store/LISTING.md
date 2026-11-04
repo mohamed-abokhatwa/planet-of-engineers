@@ -46,6 +46,16 @@ See what engineers really earn by country, discipline and experience. Share your
 ⚡ DAILY CHALLENGE
 One engineering question a day. Keep your streak and climb the leaderboard.
 
+🎓 CAMPUS FOR STUDENTS
+• Your university community: 9,700+ universities in 198 countries, and you can request a missing one
+• Exam practice: 90 questions in 10 subjects, from first-year maths and statics to engineering economics and ethics
+• Mentors: experienced engineers who answer students directly
+• Training and jobs: summer training, internships and graduate programmes, checked by moderators
+• Graduation project questions, and student and university leaderboards
+
+🛡️ SAFE COMMUNITY
+Reports, blocking, automatic filters, and moderators (including university moderators) with a full activity log.
+
 🎨 Dark or light theme, English and Arabic.
 
 Results are estimates. Always check against your local codes and a licensed engineer.
@@ -82,9 +92,27 @@ Results are estimates. Always check against your local codes and a licensed engi
 ⚡ التحدي اليومي
 سؤال هندسي كل يوم. حافظ على سلسلتك وتصدّر لوحة المتصدرين.
 
+🎓 مساحة للطلاب
+• مجتمع جامعتك: أكثر من 9,700 جامعة في 198 دولة، ويمكنك طلب إضافة جامعتك
+• تمارين الاختبارات: 90 سؤالًا في 10 مواد، من رياضيات السنة الأولى والاستاتيكا حتى الاقتصاد الهندسي وأخلاقيات المهنة
+• المرشدون: مهندسون أصحاب خبرة يجيبون الطلاب مباشرة
+• التدريب والوظائف: تدريب صيفي وتعاوني وبرامج خريجين يراجعها المشرفون
+• أسئلة مشاريع التخرج، وترتيب الطلاب والجامعات
+
+🛡️ مجتمع آمن
+إبلاغ وحظر وفلاتر تلقائية، ومشرفون (ومنهم مشرفو الجامعات) مع سجل كامل لإجراءاتهم.
+
 🎨 مظهر داكن أو فاتح، بالعربية والإنجليزية.
 
 النتائج تقديرية. راجعها دائمًا مع الأكواد المحلية ومهندس مرخص.
+
+## What's new (version 1.1)
+
+**English**
+Campus for students: join your university community (9,700+ universities), practise for exams in 10 subjects, ask mentors directly, find summer training and graduate jobs, and post graduation project questions. Student and university leaderboards. In-app moderation with university moderators.
+
+**العربية**
+مساحة جديدة للطلاب: انضم لمجتمع جامعتك (أكثر من 9,700 جامعة)، وتدرّب على الاختبارات في 10 مواد، واسأل المرشدين مباشرة، وابحث عن التدريب الصيفي ووظائف الخريجين، واطرح أسئلة مشروع تخرجك. ترتيب للطلاب والجامعات، وإشراف من داخل التطبيق مع مشرفين للجامعات.
 
 ## Google Play: Data safety form
 
@@ -99,10 +127,10 @@ Data types collected (all for **App functionality**, none for ads or marketing):
 | Type | Collected | Required? | Notes |
 |---|---|---|---|
 | Personal info → User IDs | Yes | Required | Anonymous account ID |
-| Personal info → Other info | Yes | Required | Username, country, discipline, years of experience, role |
+| Personal info → Other info | Yes | Required | Username, country, discipline, years of experience, role; optional university, year of study and mentor note |
 | Financial info → Other financial info | Yes | Optional | Salary, only if the user shares it; shown only as anonymous ranges |
 | Photos and videos → Photos | Yes | Optional | Only when attached to a Site SOS question |
-| App activity → Other user-generated content | Yes | Optional | Questions, answers, votes, reports |
+| App activity → Other user-generated content | Yes | Optional | Questions, answers, votes, reports, training and job posts |
 | App info and performance → Crash logs, Diagnostics | Yes (once crash reporting is switched on) | Required | Sentry; no personal data |
 
 Location, contacts, messages, audio, health, web history, device IDs for ads: **not collected**.

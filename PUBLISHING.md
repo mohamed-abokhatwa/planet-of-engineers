@@ -20,6 +20,9 @@ The Supabase free plan includes **2 projects**. Bil-Ghayb uses one; this is the 
    - `supabase/migrations/0001_init.sql` (tables, security, photo storage)
    - `supabase/migrations/0002_challenge_keys.sql` (Daily Challenge answers)
    - `supabase/migrations/0003_cron.sql` (daily cleanup)
+   - `supabase/migrations/0004_campus.sql` (roles and moderation, universities and communities, mentors, training board)
+   - `supabase/migrations/0005_universities.sql` (9,733 universities; about 0.9 MB, run it on its own)
+   - then, once, `select public.set_owner('YourUsername');` to make yourself the owner (use the username you chose in the app)
 4. Copy the **Project URL** and **Publishable / anon** key (safe to share).
 
 ## 3. Build
@@ -55,6 +58,6 @@ npx eas-cli@latest build --platform ios --profile production
 
 ## 5. Daily moderation (5 minutes)
 
-```sql
-select * from moderation_queue;
-```
+Open the app → **Me → Moderation → Queue**: reported posts, training posts waiting for approval and requests for
+missing universities. Team and Log show who can moderate and everything they did. The SQL view
+`moderation_queue` still works in the Supabase SQL editor.

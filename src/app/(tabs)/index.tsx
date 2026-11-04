@@ -14,6 +14,8 @@ import { countryName, flag } from '../../lib/countries';
 import { fmtNum } from '../../lib/format';
 import { JOKES } from '../../data/challenges';
 import { findTool } from '../../tools/defs';
+import { MenuCard } from '../../components/Campus';
+import { NoticeBanner } from '../../components/NoticeBanner';
 
 const QUICK = [
   { id: 'calculator', href: '/calculator' as const, icon: 'calculator-outline' as const, title: { en: 'Calculator', ar: 'الحاسبة' } },
@@ -98,10 +100,31 @@ export default function PlanetScreen() {
           ) : null}
         </Card>
 
+        <NoticeBanner />
+
+        {/* Students first see their campus */}
+        {p.role === 'student' ? (
+          <View style={{ marginTop: space.md }}>
+            <MenuCard icon="school-outline" title={t('campus')} sub={p.universityName ?? t('campusCardBody')} onPress={() => router.push('/campus')} />
+          </View>
+        ) : null}
+
         {/* Daily challenge */}
         <View style={{ marginTop: space.md }}>
           {today.data ? <ChallengeCard key={today.data.day} today={today.data} streak={me.data?.streak ?? 0} onAnswered={() => me.reload()} /> : <Loader />}
         </View>
+
+        {p.role !== 'student' ? (
+          <View style={{ marginTop: space.md }}>
+            <MenuCard
+              icon="school-outline"
+              title={t('campus')}
+              sub={p.mentor && me.data?.askedToMe ? t('askedToMeSub', { n: me.data.askedToMe }) : t('campusCardBody')}
+              badge={p.mentor ? me.data?.askedToMe : undefined}
+              onPress={() => router.push('/campus')}
+            />
+          </View>
+        ) : null}
 
         {/* Quick tools */}
         <SectionTitle title={t('quickTools')} action={t('seeAll')} onAction={() => router.navigate('/(tabs)/tools')} />

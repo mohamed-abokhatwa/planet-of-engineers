@@ -1,0 +1,35 @@
+# Builds the Android app bundle (.aab for Google Play) on Expo (EAS), from GitHub, after all tests pass.
+# Run it from the Actions tab ("Android release" → Run workflow). The .aab is attached to the run as an artifact.
+# Secret (Settings → Secrets and variables → Actions), entered by the owner — never in chat:
+#   EXPO_TOKEN   Expo access token (expo.dev → Account settings → Access tokens)
+name: Android release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Checks
+        run: |
+          npx tsc --noEmit
+          npm test
+          bash tests/db/run.sh | tail -1
+      - name: Build on EAS (versionCode goes up automatically)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then echo "::error::Add the EXPO_TOKEN secret first (expo.dev → Account settings → Access tokens)"; exit 1; fi
+          npx -y eas-cli@latest build --platform android --profile production --non-interactive --wait --json > build.json
+          URL=$(node -e "const b=JSON.parse(require('fs').readFileSync('build.json','utf8'));console.log((Array.isArray(b)?b[0]:b).artifacts.buildUrl)")
+          mkdir -p out && curl -sSL -o out/planet-of-engineers.aab "$URL"
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: planet-of-engineers-android
+          path: out/planet-of-engineers.aab

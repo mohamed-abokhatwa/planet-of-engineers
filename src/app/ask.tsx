@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -8,18 +8,24 @@ import { Button, Chip, Row, Screen, Txt, haptic } from '../components/ui';
 import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { checkPostText } from '../lib/moderation';
-import { DISCIPLINES, type Discipline, type PostResult, type Question } from '../lib/types';
+import { DISCIPLINES, type Category, type Discipline, type PostResult, type Question } from '../lib/types';
+import { Badge } from '../components/Campus';
 import type { StringKey } from '../lib/i18n';
 
 const ERR: Record<Extract<PostResult<unknown>, { ok: false }>['reason'], StringKey> = {
   contact: 'errContact', link: 'errLink', abuse: 'errAbuse', scam: 'errScam', too_short: 'errShort', too_long: 'errLong', rate: 'errRate', network: 'errNetwork',
+  suspended: 'errSuspended', not_member: 'errNotMember', not_mentor: 'errNotMentor', invalid: 'errInvalidPost',
 };
 
 export default function AskScreen() {
   const colors = useColors();
   const styles = useStyles();
   const { t, api, prefs, disc, rtl, touch } = useApp();
-  const [discipline, setDiscipline] = useState<Discipline>(prefs.profile.discipline);
+  const params = useLocalSearchParams<{ universityId?: string; mentor?: string; category?: string; discipline?: string }>();
+  const universityId = params.universityId ? Number(params.universityId) : null;
+  const mentorHandle = params.mentor ? String(params.mentor) : null;
+  const [category, setCategory] = useState<Category>(params.category === 'graduation' ? 'graduation' : 'general');
+  const [discipline, setDiscipline] = useState<Discipline>((DISCIPLINES as string[]).includes(String(params.discipline)) ? (params.discipline as Discipline) : prefs.profile.discipline);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [image, setImage] = useState<string | null>(null);
@@ -40,7 +46,7 @@ export default function AskScreen() {
   const post = async () => {
     setBusy(true);
     setError(null);
-    const r = await api.ask({ discipline, title, body, imageUri: image }).catch((): PostResult<Question> => ({ ok: false, reason: 'network' }));
+    const r = await api.ask({ discipline, title, body, imageUri: image, category, universityId, mentorHandle }).catch((): PostResult<Question> => ({ ok: false, reason: 'network' }));
     setBusy(false);
     if (!r.ok) {
       haptic.error();
@@ -57,6 +63,20 @@ export default function AskScreen() {
   return (
     <Screen>
       <BackHeader title={t('ask')} />
+      {universityId || mentorHandle ? (
+        <View style={{ marginBottom: space.md }}>
+          {universityId ? <Badge label={t('postingIn', { name: prefs.profile.universityId === universityId ? prefs.profile.universityName ?? '' : '' })} icon="school-outline" color={colors.good} /> : null}
+          {mentorHandle ? <Badge label={t('askingMentor', { handle: mentorHandle })} icon="person-outline" /> : null}
+        </View>
+      ) : null}
+      {prefs.profile.role === 'student' || category === 'graduation' ? (
+        <Pressable onPress={() => setCategory(category === 'graduation' ? 'general' : 'graduation')} accessibilityRole="checkbox" accessibilityState={{ checked: category === 'graduation' }} style={{ marginBottom: space.md }}>
+          <Row gap={8}>
+            <Ionicons name={category === 'graduation' ? 'checkbox' : 'square-outline'} size={20} color={colors.accent} />
+            <Txt style={{ flex: 1 }}>{t('graduationToggle')}</Txt>
+          </Row>
+        </Pressable>
+      ) : null}
       <Txt v="label" style={{ marginBottom: space.sm }}>
         {t('discipline')}
       </Txt>

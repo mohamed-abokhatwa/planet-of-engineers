@@ -1,0 +1,33 @@
+# Applies database updates to the live Supabase project, from GitHub. Run it BEFORE releasing the new app version.
+# Run from the Actions tab ("Database update" → Run workflow) once. 0005 alone is safe to repeat (existing universities are kept).
+# Secret (Settings → Secrets and variables → Actions), entered by the owner — never in chat:
+#   SUPABASE_ACCESS_TOKEN   Supabase personal access token (supabase.com → Account → Access tokens)
+name: Database update
+
+on:
+  workflow_dispatch:
+    inputs:
+      files:
+        description: Migration files to apply, in order
+        default: 0004_campus.sql 0005_universities.sql
+      owner:
+        description: Your username in the app, to make you the owner (leave empty to skip)
+        default: ''
+
+env:
+  PROJECT_REF: iflatdqhvnxedipcxuab
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          FILES: ${{ inputs.files }}
+          OWNER: ${{ inputs.owner }}
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then echo "::error::Add the SUPABASE_ACCESS_TOKEN secret first"; exit 1; fi
+          python3 scripts/apply-migrations.py $FILES
+          if [ -n "$OWNER" ]; then python3 scripts/apply-migrations.py --sql "select public.set_owner('$(printf '%s' "$OWNER" | tr -cd 'A-Za-z0-9_.')');"; fi

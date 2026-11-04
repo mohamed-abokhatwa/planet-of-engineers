@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Image, Pressable, TextInput, View } from 'react-native';
@@ -11,10 +11,12 @@ import { useApp, useLoad } from '../../lib/store';
 import { timeAgo } from '../../lib/format';
 import { checkPostText } from '../../lib/moderation';
 import type { StringKey } from '../../lib/i18n';
-import type { PostResult } from '../../lib/types';
+import type { ModAction, PostResult } from '../../lib/types';
+import { Badge, modErrKey } from '../../components/Campus';
 
 const ERR: Record<Extract<PostResult<unknown>, { ok: false }>['reason'], StringKey> = {
   contact: 'errContact', link: 'errLink', abuse: 'errAbuse', scam: 'errScam', too_short: 'errShort', too_long: 'errLong', rate: 'errRate', network: 'errNetwork',
+  suspended: 'errSuspended', not_member: 'errNotMember', not_mentor: 'errNotMentor', invalid: 'errInvalidPost',
 };
 
 export default function QuestionScreen() {
@@ -23,6 +25,24 @@ export default function QuestionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t, api, locale, rtl, touch } = useApp();
   const data = useLoad((a) => a.getQuestion(String(id)));
+  const staff = useLoad((a) => a.myStaff().catch(() => null));
+  const [modErr, setModErr] = useState<StringKey | null>(null);
+  const modAct = async (kind: 'question' | 'answer', targetId: string, action: ModAction) => {
+    setModErr(null);
+    try {
+      await api.modAct(kind, targetId, action);
+      haptic.success();
+      if (kind === 'question' && action === 'delete') {
+        touch();
+        return;
+      }
+      data.reload();
+      touch();
+    } catch (e) {
+      haptic.error();
+      setModErr(modErrKey(e));
+    }
+  };
   const [report, setReport] = useState<ReportTarget>(null);
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
@@ -30,6 +50,8 @@ export default function QuestionScreen() {
 
   const q = data.data?.question;
   const answers = data.data?.answers ?? [];
+  // university moderators act only inside their own community; the server checks it again
+  const canMod = !!staff.data && !!q && (staff.data.role !== 'uni_moderator' || (!!q.university && q.university.id === staff.data.universityId));
   const live = text.length > 0 ? checkPostText(text, 1, 5000) : null;
   const liveErr = live && live !== 'too_short' ? ERR[live] : null;
 
@@ -69,7 +91,14 @@ export default function QuestionScreen() {
           ) : undefined
         }
       />
-      <DisciplineTag discipline={q.discipline} />
+      <Row gap={6} style={{ flexWrap: 'wrap' }}>
+        <DisciplineTag discipline={q.discipline} />
+        {q.pinned ? <Badge label={t('pinned')} icon="pin" color={colors.accent} /> : null}
+        {q.hidden ? <Badge label={t('badgeHidden')} color={colors.bad} /> : null}
+        {q.category === 'graduation' ? <Badge label={t('badgeGraduation')} icon="ribbon-outline" color={colors.warn} /> : null}
+        {q.mentorHandle ? <Badge label={t('toMentor', { handle: q.mentorHandle })} icon="person-outline" /> : null}
+        {q.university ? <Badge label={q.university.name} icon="school-outline" color={colors.good} /> : null}
+      </Row>
       <Txt v="title" auto style={{ marginTop: space.sm, fontSize: 22, lineHeight: 30 }}>
         {q.title}
       </Txt>
@@ -83,6 +112,27 @@ export default function QuestionScreen() {
       <Row style={{ marginTop: space.md }}>
         <VoteBox horizontal score={q.score} myVote={q.myVote} disabled={q.isMine} onVote={(v) => vote('question', q.id, v)} />
       </Row>
+      {canMod ? (
+        <Card style={{ marginTop: space.md }}>
+          <Txt v="label" style={{ marginBottom: 6 }}>
+            {t('moderation')}
+          </Txt>
+          <Row gap={8} style={{ flexWrap: 'wrap' }}>
+            {q.university ? <Button label={t(q.pinned ? 'actUnpin' : 'actPin')} variant="outline" onPress={() => modAct('question', q.id, q.pinned ? 'unpin' : 'pin')} style={{ flexGrow: 1 }} /> : null}
+            <Button label={t(q.hidden ? 'actRestore' : 'actHide')} variant="outline" onPress={() => modAct('question', q.id, q.hidden ? 'restore' : 'hide')} style={{ flexGrow: 1 }} />
+            <Button
+              label={t('actDelete')}
+              variant="ghost"
+              onPress={async () => {
+                await modAct('question', q.id, 'delete');
+                router.back();
+              }}
+              style={{ flexGrow: 1 }}
+            />
+          </Row>
+          {modErr ? <Txt v="small" style={{ marginTop: 6, color: colors.bad }}>{t(modErr)}</Txt> : null}
+        </Card>
+      ) : null}
 
       <Txt v="label" style={{ marginTop: space.xl, marginBottom: space.sm }}>
         {answers.length === 1 ? t('oneAnswer') : answers.length === 0 ? t('noAnswers') : t('answers', { n: answers.length })}
@@ -105,6 +155,11 @@ export default function QuestionScreen() {
                 <View style={{ flex: 1 }}>
                   <AuthorLine author={a.author} time={timeAgo(a.createdAt, locale)} />
                 </View>
+                {canMod ? (
+                  <Pressable onPress={() => modAct('answer', a.id, 'delete')} hitSlop={10} accessibilityLabel={t('actDelete')} style={{ marginHorizontal: 8 }}>
+                    <Ionicons name="trash-outline" size={18} color={colors.bad} />
+                  </Pressable>
+                ) : null}
                 {!a.isMine ? (
                   <Pressable onPress={() => setReport({ kind: 'answer', id: a.id })} hitSlop={10} accessibilityLabel={t('report')}>
                     <Ionicons name="ellipsis-horizontal" size={18} color={colors.textFaint} />

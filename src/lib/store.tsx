@@ -60,7 +60,8 @@ interface Ctx {
   disc: (d: Discipline) => string;
   roleName: (r: Role) => string;
   setPrefs: (p: Partial<Prefs>) => void;
-  setProfile: (p: Partial<Profile>) => void;
+  /** Saves on the device at once; the promise settles when the server has it too. */
+  setProfile: (p: Partial<Profile>) => Promise<void>;
   completeOnboarding: (p: Profile) => Promise<void>;
   reset: () => Promise<void>;
   version: number;
@@ -98,7 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setProfile = useCallback(
     (p: Partial<Profile>) => {
       persist({ ...prefs, profile: { ...prefs.profile, ...p } });
-      if (prefs.onboarded) api.updateProfile(p).catch(() => {});
+      return prefs.onboarded ? api.updateProfile(p).catch(() => {}) : Promise.resolve();
     },
     [prefs, persist],
   );

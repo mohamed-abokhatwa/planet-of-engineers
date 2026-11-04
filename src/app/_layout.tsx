@@ -72,6 +72,16 @@ function Root() {
         <Stack.Screen name="salary-share" options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="leaderboard" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="card" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="campus" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="university" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="community/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="feed" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="mentors" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="opportunities" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="opportunity-new" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="practice/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="practice/[track]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="moderation" options={{ animation: 'slide_from_right' }} />
       </Stack>
     </View>
   );

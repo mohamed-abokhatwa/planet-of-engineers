@@ -8,6 +8,7 @@ import { fonts, radius, space, useColors, makeStyles } from '../theme';
 import { useApp } from '../lib/store';
 import { timeAgo } from '../lib/format';
 import type { Question } from '../lib/types';
+import { Badge } from './Campus';
 
 export const QuestionCard = memo(function QuestionCard({ q }: { q: Question }) {
   const colors = useColors();
@@ -21,6 +22,15 @@ export const QuestionCard = memo(function QuestionCard({ q }: { q: Question }) {
           <DisciplineTag discipline={q.discipline} />
           <Txt v="mono" style={{ fontSize: 11.5 }}>{timeAgo(q.createdAt, locale)}</Txt>
         </Row>
+        {q.pinned || q.category === 'graduation' || q.mentorHandle || q.university || q.hidden ? (
+          <Row gap={6} style={{ flexWrap: 'wrap', marginBottom: space.sm }}>
+            {q.pinned ? <Badge label={t('pinned')} icon="pin" color={colors.accent} /> : null}
+            {q.hidden ? <Badge label={t('badgeHidden')} color={colors.bad} /> : null}
+            {q.category === 'graduation' ? <Badge label={t('badgeGraduation')} icon="ribbon-outline" color={colors.warn} /> : null}
+            {q.mentorHandle ? <Badge label={t('toMentor', { handle: q.mentorHandle })} icon="person-outline" /> : null}
+            {q.university ? <Badge label={q.university.name} icon="school-outline" color={colors.good} /> : null}
+          </Row>
+        ) : null}
         <Row gap={space.md} style={{ alignItems: 'flex-start' }}>
           <View style={{ flex: 1 }}>
             <Txt v="heading" auto numberOfLines={2} style={{ fontSize: 16.5, lineHeight: 23 }}>
